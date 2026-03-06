@@ -1212,7 +1212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 442665541}
   m_Layer: 5
-  m_Name: LeftArmAttackUI
+  m_Name: LeftLegAttackUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2059,6 +2059,8 @@ MonoBehaviour:
   attackStartTime: 3
   attackTimeRangeMin: 3
   attackTimeRangeMax: 7
+  isAttacking: 0
+  ringCorrectMax: 1.3
   attack1Frozen: 0
   attack2Frozen: 0
 --- !u!1 &1111439309
@@ -3321,7 +3323,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1712324197}
   m_Layer: 5
-  m_Name: RightArmAttackUI
+  m_Name: RightLegAttackUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,10 +10,6 @@ public class DollHealthManager : MonoBehaviour
         dollHealthSlider.value = Data.dollHealth;
     }
 
-    void Update()
-    {
-    }
-
     public void loseHealth(float hitAmount)
     {
         Data.dollHealth -= hitAmount;

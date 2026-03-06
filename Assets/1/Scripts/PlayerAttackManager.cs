@@ -22,7 +22,7 @@ public class PlayerAttackManager : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.W)) HandleAttack("Head");
-        else if (Input.GetKeyDown(KeyCode.S)) HandleAttack("Body");
+        //else if (Input.GetKeyDown(KeyCode.S)) HandleAttack("Body");
         else if (Input.GetKeyDown(KeyCode.A)) HandleAttack("LeftArm");
         else if (Input.GetKeyDown(KeyCode.D)) HandleAttack("RightArm");
         else if (Input.GetKeyDown(KeyCode.Z)) HandleAttack("LeftLeg");
@@ -42,16 +42,15 @@ public class PlayerAttackManager : MonoBehaviour
                 DollGotHit();
                 dollAttackManager.attack1Frozen = true;
                 StartCoroutine(DissapearAfterDelay(correctWaitTime));
+
+                Debug.Log(attack + " : successfully hit!");
             }
             else
             {
+                hasHit = true;
                 WrongTiming(dollAttackManager.attack1);
+                Debug.Log(attack + " : wrong timing!");
             }
-        }
-        else
-        {
-            hasHit = true;
-            DollGotHit(); //If there is no attack happening, doll loses health
         }
 
         if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attack)
@@ -62,16 +61,20 @@ public class PlayerAttackManager : MonoBehaviour
                 DollGotHit();
                 dollAttackManager.attack2Frozen = true;
                 StartCoroutine(DissapearAfterDelay(correctWaitTime));
+                Debug.Log(attack + " : successfully hit!");
             }
             else
             {
+                hasHit = true;
                 WrongTiming(dollAttackManager.attack2);
+                Debug.Log(attack + " : wrong timing!");
             }
         }
 
         if (!hitSuccessful && !hasHit) //If the player pressed the wrong attack button, doll still loses health
         {
             DollGotHit();
+            Debug.Log(attack + " : hit!");
         }
 
     }
