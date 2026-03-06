@@ -7,6 +7,7 @@ public class ArduinoInput : MonoBehaviour
     public int head;
     public int leftArm;
     public int rightArm;
+    public int leftLeg;
     public int body;
 
     void Update()
@@ -18,17 +19,21 @@ public class ArduinoInput : MonoBehaviour
 
         string[] values = message.Split(',');
 
-        if(values.Length == 4)
+        if(values.Length == 5)
         {
             head = int.Parse(values[0]);
             leftArm = int.Parse(values[1]);
             rightArm = int.Parse(values[2]);
-            body = int.Parse(values[3]);
+            leftLeg = int.Parse(values[3]);
+            body = int.Parse(values[4]);
 
-            Debug.Log("Head: " + head +
-                      " LArm: " + leftArm +
-                      " RArm: " + rightArm +
-                      " Body: " + body);
+            Debug.Log(
+                "Head:" + head +
+                " LArm:" + leftArm +
+                " RArm:" + rightArm +
+                " LLeg:" + leftLeg +
+                " Body:" + body
+            );
         }
     }
 }
