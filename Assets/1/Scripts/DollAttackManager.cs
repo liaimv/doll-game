@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class DollAttackManager : MonoBehaviour
 {
@@ -32,6 +31,9 @@ public class DollAttackManager : MonoBehaviour
 
     private GameObject selectedAttack1Ring;
     private GameObject selectedAttack2Ring;
+
+    private Image selectedAttack1RingImage;
+    private Image selectedAttack2RingImage;
 
     void Start()
     {
@@ -96,6 +98,7 @@ public class DollAttackManager : MonoBehaviour
             selectedAttack1.SetActive(true);
 
             selectedAttack1Ring = selectedAttack1.transform.GetChild(0).gameObject;
+            selectedAttack1RingImage = selectedAttack1Ring.GetComponent<Image>();
         }
         else
         {
@@ -104,6 +107,9 @@ public class DollAttackManager : MonoBehaviour
 
             selectedAttack1Ring = selectedAttack1.transform.GetChild(0).gameObject;
             selectedAttack2Ring = selectedAttack2.transform.GetChild(0).gameObject;
+
+            selectedAttack1RingImage = selectedAttack1Ring.GetComponent<Image>();
+            selectedAttack2RingImage = selectedAttack2Ring.GetComponent<Image>();
         }
 
         while (isAttacking)
@@ -113,20 +119,36 @@ public class DollAttackManager : MonoBehaviour
             {
                 ringScale = Vector3.one * ringSizeMin;
 
-                selectedAttack1.SetActive(false);
-                if (selectedAttack2 != null) selectedAttack2.SetActive(false);
-
-                float randomWaitTime = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
-                StartCoroutine(AttackSequence(randomWaitTime));
-
-                isAttacking = false;
+                ResetVariables();
+            }
+            else if (ringScale.x <= 1.3f)
+            {
+                selectedAttack1RingImage.color = Color.green;
+                if (selectedAttack2 != null) selectedAttack2RingImage.color = Color.green;
             }
 
-            selectedAttack1Ring.transform.localScale = ringScale;
+                selectedAttack1Ring.transform.localScale = ringScale;
             if (selectedAttack2 != null) selectedAttack2Ring.transform.localScale = ringScale;
 
             yield return null; 
         }
+    }
+
+    void ResetVariables()
+    {
+        selectedAttack1.SetActive(false);
+        if (selectedAttack2 != null)
+        {
+            selectedAttack2.SetActive(false);
+            selectedAttack2RingImage.color = Color.white;
+        }
+
+        selectedAttack1RingImage.color = Color.white;
+
+        isAttacking = false;
+
+        float randomWaitTime = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
+        StartCoroutine(AttackSequence(randomWaitTime));
     }
 
     void Update()
