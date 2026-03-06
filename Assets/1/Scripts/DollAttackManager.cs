@@ -26,6 +26,11 @@ public class DollAttackManager : MonoBehaviour
 
     public bool isAttacking = false;
 
+    public float ringCorrectMax = 1.3f;
+
+    private Vector3 ringScale1;
+    private Vector3 ringScale2;
+
     private GameObject selectedAttack1;
     private GameObject selectedAttack2;
 
@@ -45,6 +50,7 @@ public class DollAttackManager : MonoBehaviour
     public bool attack2Frozen;
 
     public Coroutine currentAttackCoroutine;
+    public Coroutine currentStartAttackCoroutine;
 
     private PlayerAttackManager playerAttackManager;
 
@@ -74,6 +80,12 @@ public class DollAttackManager : MonoBehaviour
 
     private IEnumerator AttackSequence(float attackTimeRange)
     {
+        if (attack1 != null) attack1 = null;
+        if (attack2 != null) attack2 = null;
+
+        if (selectedAttack1 != null) selectedAttack1 = null;
+        if (selectedAttack2 != null) selectedAttack2 = null;
+
         yield return new WaitForSeconds(attackTimeRange);
 
         //Randomly select one or two attacks
@@ -100,7 +112,26 @@ public class DollAttackManager : MonoBehaviour
             selectedAttack2 = attackUIList[secondIndex];
         }
 
-        StartCoroutine(StartAttack());
+        CreateAttack();
+        currentStartAttackCoroutine = StartCoroutine(StartAttack());
+    }
+
+    private void CreateAttack()
+    {
+        if (selectedAttack1 != null)
+        {
+            selectedAttack1.SetActive(true);
+            attack1 = CreateAttack(selectedAttack1);
+        }
+
+        if (selectedAttack2 != null)
+        {
+            selectedAttack2.SetActive(true);
+            attack2 = CreateAttack(selectedAttack2);
+        }
+
+        ringScale1 = new Vector3(ringSizeMax, ringSizeMax, ringSizeMax);
+        ringScale2 = new Vector3(ringSizeMax, ringSizeMax, ringSizeMax);
     }
 
     private IEnumerator StartAttack()
@@ -109,64 +140,20 @@ public class DollAttackManager : MonoBehaviour
         attack1Frozen = false;
         attack2Frozen = false;
 
-        Vector3 ringScale1 = new Vector3(ringSizeMax, ringSizeMax, ringSizeMax);
-        Vector3 ringScale2 = new Vector3(ringSizeMax, ringSizeMax, ringSizeMax);
-
-        if (selectedAttack1 != null)
-        {
-            selectedAttack1.SetActive(true);
-
-            selectedAttack1Ring = selectedAttack1.transform.GetChild(0).gameObject;
-            selectedAttack1RingImage = selectedAttack1Ring.GetComponent<Image>();
-            selectedAttack1CircleImage = selectedAttack1.transform.GetChild(1).gameObject.GetComponent<Image>();
-            selectedAttack1RingImage.color = Color.white;
-            selectedAttack1CircleImage.color = Color.white;
-
-            attack1 = new ActiveAttack
-            {
-                attackObject = selectedAttack1,
-                ringObject = selectedAttack1Ring,
-                ringImage = selectedAttack1RingImage,
-                circleImage = selectedAttack1CircleImage,
-                attackName = GetKeyForAttack(selectedAttack1.name),
-                isGreen = false
-            };
-        }
-
-        if (selectedAttack2 != null)
-        {
-            selectedAttack2.SetActive(true);
-            selectedAttack2Ring = selectedAttack2.transform.GetChild(0).gameObject;
-            selectedAttack2RingImage = selectedAttack2Ring.GetComponent<Image>();
-            selectedAttack2CircleImage = selectedAttack2.transform.GetChild(1).gameObject.GetComponent<Image>();
-            selectedAttack2RingImage.color = Color.white;
-            selectedAttack2CircleImage.color = Color.white;
-
-            attack2 = new ActiveAttack
-            {
-                attackObject = selectedAttack2,
-                ringObject = selectedAttack2Ring,
-                ringImage = selectedAttack2RingImage,
-                circleImage = selectedAttack2CircleImage,
-                attackName = GetKeyForAttack(selectedAttack2.name),
-                isGreen = false
-            };
-        }
-
         while (isAttacking)
         {
             bool attackEnded = false;
 
-            if (!attack1Frozen && selectedAttack1 != null)
+            if (!attack1Frozen && selectedAttack1 != null && attack1 != null)
             {
                 ringScale1 -= Vector3.one * Data.ringSpeed * Time.deltaTime;
 
-                selectedAttack1Ring.transform.localScale = ringScale1;
+                attack1.ringObject.transform.localScale = ringScale1;
 
-                if (ringScale1.x <= 1.3f)
+                if (ringScale1.x <= ringCorrectMax)
                 {
                     attack1.isGreen = true;
-                    selectedAttack1RingImage.color = Color.green;
+                    attack1.ringImage.color = Color.green;
                 }
 
                 if (ringScale1.x <= ringSizeMin)
@@ -177,21 +164,21 @@ public class DollAttackManager : MonoBehaviour
                 }
             }
 
-            if (selectedAttack2 != null && !attack2Frozen)
+            if (!attack2Frozen && selectedAttack2 != null && attack2 != null)
             {
                 ringScale2 -= Vector3.one * Data.ringSpeed * Time.deltaTime;
 
-                selectedAttack2Ring.transform.localScale = ringScale2;
+                attack2.ringObject.transform.localScale = ringScale2;
 
-                if (ringScale2.x <= 1.3f)
+                if (ringScale2.x <= ringCorrectMax)
                 {
                     attack2.isGreen = true;
-                    selectedAttack2RingImage.color = Color.green;
+                    attack2.ringImage.color = Color.green;
                 }
 
                 if (ringScale2.x <= ringSizeMin)
                 {
-                    attack1Frozen = true;
+                    attack2Frozen = true;
                     attackEnded = true;
                     playerAttackManager.WrongTiming(attack2);
                 }
@@ -208,22 +195,28 @@ public class DollAttackManager : MonoBehaviour
 
     public void EndCurrentAttack()
     {
-        if (selectedAttack1 != null)
+        if (selectedAttack1 != null && attack1 != null)
         {
             selectedAttack1.SetActive(false);
-            selectedAttack1RingImage.color = Color.white;
-            selectedAttack1CircleImage.color = Color.white;
+            attack1.ringImage.color = Color.white;
+            attack1.circleImage.color = Color.white;
             attack1.isGreen = false;
             attack1Frozen = false;
         }
 
-        if (selectedAttack2 != null)
+        if (selectedAttack2 != null && attack2 != null)
         {
             selectedAttack2.SetActive(false);
-            selectedAttack2RingImage.color = Color.white;
-            selectedAttack2CircleImage.color = Color.white;
+            attack2.ringImage.color = Color.white;
+            attack2.circleImage.color = Color.white;
             attack2.isGreen = false;
             attack2Frozen = false;
+        }
+
+        if (currentStartAttackCoroutine != null)
+        {
+            StopCoroutine(currentStartAttackCoroutine);
+            currentStartAttackCoroutine = null;
         }
 
         if (currentAttackCoroutine != null)
@@ -249,6 +242,26 @@ public class DollAttackManager : MonoBehaviour
         }
         return "";
     }
+
+    ActiveAttack CreateAttack(GameObject attackUI)
+    {
+        GameObject ring = attackUI.transform.GetChild(0).gameObject;
+        Image ringImage = ring.GetComponent<Image>();
+        Image circleImage = attackUI.transform.GetChild(1).GetComponent<Image>();
+
+        ringImage.color = Color.white;
+        circleImage.color = Color.white;
+
+        return new ActiveAttack
+        {
+            attackObject = attackUI,
+            ringObject = ring,
+            ringImage = ringImage,
+            circleImage = circleImage,
+            attackName = GetKeyForAttack(attackUI.name),
+            isGreen = false
+        };
+    }
 }
 
 public class ActiveAttack
@@ -257,7 +270,9 @@ public class ActiveAttack
     public GameObject ringObject;
     public Image ringImage;
     public Image circleImage;
-    public string attackName; 
+    public string attackName;
     public bool isGreen;
 }
+
+
 
