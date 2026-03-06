@@ -2007,6 +2007,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackAmount: 5
   isBeingAttacked: 0
+  penaltyWaitTime: 1.5
+  correctWaitTime: 0.2
 --- !u!114 &1070773567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2052,11 +2054,13 @@ MonoBehaviour:
   rightArmAttackUI: {fileID: 1311253218}
   leftLegAttackUI: {fileID: 442665540}
   rightLegAttackUI: {fileID: 1712324196}
-  ringSizeMin: 0.9
+  ringSizeMin: 0.8
   ringSizeMax: 2
   attackStartTime: 3
   attackTimeRangeMin: 3
   attackTimeRangeMax: 7
+  attack1Frozen: 0
+  attack2Frozen: 0
 --- !u!1 &1111439309
 GameObject:
   m_ObjectHideFlags: 0
