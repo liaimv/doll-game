@@ -22,8 +22,8 @@ public class SoulMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        speed += 2f;
-        transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
+        //speed += 2f;
+        transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime * 100);
 
 
         if (Vector3.Distance (transform.position, destination) < 0.05f)
