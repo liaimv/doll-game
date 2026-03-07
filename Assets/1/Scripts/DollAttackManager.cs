@@ -140,12 +140,16 @@ public class DollAttackManager : MonoBehaviour
         attack1Frozen = false;
         attack2Frozen = false;
 
+        StartCoroutine(playerAttackManager.AttackAnimation());
+
         while (isAttacking)
         {
             bool attackEnded = false;
 
             if (!attack1Frozen && selectedAttack1 != null && attack1 != null)
             {
+                StartCoroutine(playerAttackManager.AttackAnimation());
+
                 ringScale1 -= Vector3.one * Data.ringSpeed * Time.deltaTime;
 
                 attack1.ringObject.transform.localScale = ringScale1;
@@ -161,6 +165,7 @@ public class DollAttackManager : MonoBehaviour
                     attack1Frozen = true;
                     attackEnded = true;
                     playerAttackManager.WrongTiming(attack1);
+                    playerAttackManager.isAttackedFalse = true;
                 }
             }
 
@@ -181,6 +186,7 @@ public class DollAttackManager : MonoBehaviour
                     attack2Frozen = true;
                     attackEnded = true;
                     playerAttackManager.WrongTiming(attack2);
+                    playerAttackManager.isAttackedFalse = true;
                 }
             }
 

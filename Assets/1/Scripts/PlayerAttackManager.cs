@@ -4,17 +4,26 @@ using UnityEngine.InputSystem;
 
 public class PlayerAttackManager : MonoBehaviour
 {
-    public int attackAmount = 5;
+    public int dollAttackAmount = 5;
+    public int playerAttackAmount = 10;
     public bool isBeingAttacked = false;
+    public bool isAttackedFalse = false;
 
     public float penaltyWaitTime = 1.5f;
     public float correctWaitTime = 0.5f;
 
+    public float attackAnimationDuration = 2f;
+
+    private PlayerHealthManager playerHealthManager;
     private DollHealthManager dollHealthManager;
     private DollAttackManager dollAttackManager;
 
+    private float dollDamageWindow = 0.2f;
+    private float lastDollDamageTime = -1f;
+
     void Start()
     {
+        playerHealthManager = GetComponent<PlayerHealthManager>();
         dollHealthManager = GetComponent<DollHealthManager>();
         dollAttackManager = GetComponent<DollAttackManager>();
     }
@@ -34,10 +43,13 @@ public class PlayerAttackManager : MonoBehaviour
         bool hasHit = false;
         bool hitSuccessful = false;
 
+        isAttackedFalse = false;
+
         if (dollAttackManager.attack1 != null && dollAttackManager.attack1.attackName == attack)
         {
             if (dollAttackManager.attack1.isGreen)
             {
+                isAttackedFalse = false;
                 hitSuccessful = true;
                 DollGotHit();
                 dollAttackManager.attack1Frozen = true;
@@ -47,6 +59,7 @@ public class PlayerAttackManager : MonoBehaviour
             }
             else
             {
+                isAttackedFalse = true;
                 hasHit = true;
                 WrongTiming(dollAttackManager.attack1);
                 Debug.Log(attack + " : wrong timing!");
@@ -57,6 +70,7 @@ public class PlayerAttackManager : MonoBehaviour
         {
             if (dollAttackManager.attack2.isGreen)
             {
+                isAttackedFalse = false;
                 hitSuccessful = true;
                 DollGotHit();
                 dollAttackManager.attack2Frozen = true;
@@ -65,6 +79,7 @@ public class PlayerAttackManager : MonoBehaviour
             }
             else
             {
+                isAttackedFalse = true;
                 hasHit = true;
                 WrongTiming(dollAttackManager.attack2);
                 Debug.Log(attack + " : wrong timing!");
@@ -103,8 +118,38 @@ public class PlayerAttackManager : MonoBehaviour
         dollAttackManager.EndCurrentAttack();
     }
 
+    public IEnumerator AttackAnimation()
+    {
+        //Play Animation
+
+        yield return new WaitForSeconds(attackAnimationDuration);
+
+        if (isAttackedFalse)
+        {
+            Debug.Log("player losing health");
+            if (dollAttackManager.attack2 != null)
+            {
+                playerHealthManager.loseHealth(playerAttackAmount * 2);
+            }
+            else
+            {
+                playerHealthManager.loseHealth(playerAttackAmount);
+            }
+
+            isAttackedFalse = false;
+        }
+    }
+
     void DollGotHit()
     {
-        dollHealthManager.loseHealth(attackAmount);
+        //Prevent doll losing multiple health when player presses attack at the same time
+        if (Time.time - lastDollDamageTime < dollDamageWindow)
+        {
+            return;
+        }
+
+        lastDollDamageTime = Time.time;
+
+        dollHealthManager.loseHealth(dollAttackAmount);
     }
 }

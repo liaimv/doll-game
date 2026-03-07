@@ -1986,6 +1986,7 @@ GameObject:
   - component: {fileID: 1070773567}
   - component: {fileID: 1070773566}
   - component: {fileID: 1070773569}
+  - component: {fileID: 1070773570}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -2005,10 +2006,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ebe5274d4559664c8f88ac9e26ae6b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackAmount: 5
+  dollAttackAmount: 5
+  playerAttackAmount: 10
   isBeingAttacked: 0
+  isAttackedFalse: 0
   penaltyWaitTime: 1.5
   correctWaitTime: 0.2
+  attackAnimationDuration: 2
 --- !u!114 &1070773567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2021,6 +2025,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2012ff1719ab71d4db9058c5ce39caf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highHealthCol: {r: 1, g: 0, b: 0.72038174, a: 1}
+  midHealthCol: {r: 0.5410471, g: 0, b: 1, a: 1}
+  lowHealthCol: {r: 0.04464817, g: 0, b: 1, a: 1}
   dollHealthSlider: {fileID: 369760026}
 --- !u!4 &1070773568
 Transform:
@@ -2060,12 +2067,25 @@ MonoBehaviour:
   attackTimeRangeMin: 3
   attackTimeRangeMax: 7
   isAttacking: 0
-
   ringCorrectMax: 1.3
-
-
   attack1Frozen: 0
   attack2Frozen: 0
+--- !u!114 &1070773570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070773565}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06df6213205100746a43c2ed90800c51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highHealthCol: {r: 0.12791133, g: 1, b: 0, a: 1}
+  midHealthCol: {r: 1, g: 0.9641284, b: 0, a: 1}
+  lowHealthCol: {r: 1, g: 0.5354804, b: 0, a: 1}
+  playerHealthSlider: {fileID: 1463300735}
 --- !u!1 &1111439309
 GameObject:
   m_ObjectHideFlags: 0
@@ -2207,6 +2227,7 @@ MonoBehaviour:
   head: 0
   leftArm: 0
   rightArm: 0
+  leftLeg: 0
   body: 0
 --- !u!1 &1176415430
 GameObject:
