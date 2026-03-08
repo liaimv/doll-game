@@ -8,5 +8,5 @@ public class Data
 
     public static float highPressureAmount = 90f;
 
-    public static float ringSpeed = 0.5f;
+    public static float ringSpeed = 0.7f;
 }

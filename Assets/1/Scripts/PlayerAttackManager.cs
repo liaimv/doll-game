@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerAttackManager : MonoBehaviour
 {
@@ -17,6 +16,7 @@ public class PlayerAttackManager : MonoBehaviour
     private PlayerHealthManager playerHealthManager;
     private DollHealthManager dollHealthManager;
     private DollAttackManager dollAttackManager;
+    private CPR cprManager;
 
     private float dollDamageWindow = 0.2f;
     private float lastDollDamageTime = -1f;
@@ -26,16 +26,21 @@ public class PlayerAttackManager : MonoBehaviour
         playerHealthManager = GetComponent<PlayerHealthManager>();
         dollHealthManager = GetComponent<DollHealthManager>();
         dollAttackManager = GetComponent<DollAttackManager>();
+        cprManager = GetComponent<CPR>();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.W)) HandleAttack("Head");
-        //else if (Input.GetKeyDown(KeyCode.S)) HandleAttack("Body");
         else if (Input.GetKeyDown(KeyCode.A)) HandleAttack("LeftArm");
         else if (Input.GetKeyDown(KeyCode.D)) HandleAttack("RightArm");
         else if (Input.GetKeyDown(KeyCode.Z)) HandleAttack("LeftLeg");
         else if (Input.GetKeyDown(KeyCode.X)) HandleAttack("RightLeg");
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            HandleCPR();
+        }
     }
 
     void HandleAttack(string attack)
@@ -86,20 +91,63 @@ public class PlayerAttackManager : MonoBehaviour
             }
         }
 
-        if (!hitSuccessful && !hasHit) //If the player pressed the wrong attack button, doll still loses health
+        if (!hitSuccessful && !hasHit)
         {
             DollGotHit();
             Debug.Log(attack + " : hit!");
         }
+    }
 
+    void HandleCPR()
+    {
+        if (cprManager == null) return;
+        if (!cprManager.cprActive) return;
+        if (cprManager.cprAttack == null) return;
+
+        if (cprManager.cprAttack.isGreen)
+        {
+            cprManager.CPRSuccess();
+            Debug.Log("CPR success!");
+        }
+        else
+        {
+            CPRWrongTiming();
+            Debug.Log("CPR wrong timing!");
+        }
+    }
+
+    void CPRWrongTiming()
+    {
+        if (cprManager == null || cprManager.cprAttack == null) return;
+
+        cprManager.cprAttack.isGreen = false;
+        cprManager.cprAttack.circleImage.color = Color.red;
+        cprManager.cprAttack.ringImage.color = Color.red;
+        cprManager.cprFrozen = true;
+
+        StartCoroutine(CPRDisappearAfterDelay(penaltyWaitTime));
+    }
+
+    IEnumerator CPRDisappearAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (cprManager != null)
+        {
+            cprManager.EndCurrentCPR();
+        }
     }
 
     public void WrongTiming(ActiveAttack attack)
     {
         attack.isGreen = false;
-        dollAttackManager.attack1.circleImage.color = Color.red;
-        dollAttackManager.attack1.ringImage.color = Color.red;
-        dollAttackManager.attack1Frozen = true;
+
+        if (dollAttackManager.attack1 != null)
+        {
+            dollAttackManager.attack1.circleImage.color = Color.red;
+            dollAttackManager.attack1.ringImage.color = Color.red;
+            dollAttackManager.attack1Frozen = true;
+        }
 
         if (dollAttackManager.attack2 != null)
         {
@@ -120,13 +168,12 @@ public class PlayerAttackManager : MonoBehaviour
 
     public IEnumerator AttackAnimation()
     {
-        //Play Animation
-
         yield return new WaitForSeconds(attackAnimationDuration);
 
         if (isAttackedFalse)
         {
             Debug.Log("player losing health");
+
             if (dollAttackManager.attack2 != null)
             {
                 playerHealthManager.loseHealth(playerAttackAmount * 2);
@@ -142,14 +189,12 @@ public class PlayerAttackManager : MonoBehaviour
 
     void DollGotHit()
     {
-        //Prevent doll losing multiple health when player presses attack at the same time
         if (Time.time - lastDollDamageTime < dollDamageWindow)
         {
             return;
         }
 
         lastDollDamageTime = Time.time;
-
         dollHealthManager.loseHealth(dollAttackAmount);
     }
 }
