@@ -69,7 +69,7 @@ public class PlayerAttackManager : MonoBehaviour
 
             if (dollAttackManager.attack1 != null)
             {
-                dollAttackManager.attack2.isGreen = false;
+                if (dollAttackManager.attack2 != null) dollAttackManager.attack2.isGreen = false;
                 WrongTiming(dollAttackManager.attack1);
             }
 
