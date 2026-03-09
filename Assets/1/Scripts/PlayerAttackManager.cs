@@ -91,11 +91,11 @@ public class PlayerAttackManager : MonoBehaviour
             }
         }
 
-        if (!hitSuccessful && !hasHit)
-        {
-            DollGotHit();
-            Debug.Log(attack + " : hit!");
-        }
+        //if (!hitSuccessful && !hasHit)
+        //{
+        //    DollGotHit();
+        //    Debug.Log(attack + " : hit!");
+        //}
     }
 
     void HandleCPR()
