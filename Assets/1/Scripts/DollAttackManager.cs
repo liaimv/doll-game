@@ -13,6 +13,10 @@ public class DollAttackManager : MonoBehaviour
     public GameObject rightArmAttackUI;
     public GameObject leftLegAttackUI;
     public GameObject rightLegAttackUI;
+    public GameObject cprUI;
+
+
+
 
     private List<GameObject> attackUIList;
 
@@ -64,6 +68,8 @@ public class DollAttackManager : MonoBehaviour
         rightArmAttackUI.SetActive(false);
         leftLegAttackUI.SetActive(false);
         rightLegAttackUI.SetActive(false);
+
+        cprUI.SetActive(false);
 
         attackUIList = new List<GameObject>()
         {
@@ -266,7 +272,7 @@ public class DollAttackManager : MonoBehaviour
             circleImage = circleImage,
             attackName = GetKeyForAttack(attackUI.name),
             isGreen = false
-        };
+};
     }
 }
 
@@ -278,6 +284,7 @@ public class ActiveAttack
     public Image circleImage;
     public string attackName;
     public bool isGreen;
+    public bool wasHit = false;
 }
 
 
