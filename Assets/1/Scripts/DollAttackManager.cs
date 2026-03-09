@@ -272,7 +272,7 @@ public class DollAttackManager : MonoBehaviour
             circleImage = circleImage,
             attackName = GetKeyForAttack(attackUI.name),
             isGreen = false
-        };
+};
     }
 }
 
@@ -284,6 +284,7 @@ public class ActiveAttack
     public Image circleImage;
     public string attackName;
     public bool isGreen;
+    public bool wasHit = false;
 }
 
 

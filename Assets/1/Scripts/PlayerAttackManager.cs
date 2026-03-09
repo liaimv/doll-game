@@ -1,4 +1,5 @@
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerAttackManager : MonoBehaviour
@@ -20,6 +21,12 @@ public class PlayerAttackManager : MonoBehaviour
 
     private float dollDamageWindow = 0.2f;
     private float lastDollDamageTime = -1f;
+
+    private bool comboActive = false;       
+    private bool comboFailed = false;     
+    private float comboStartTime = 0f;      
+    public float comboWindow = 0.2f;    
+    private List<ActiveAttack> currentCombo = new List<ActiveAttack>();
 
     void Start()
     {
@@ -43,59 +50,202 @@ public class PlayerAttackManager : MonoBehaviour
         }
     }
 
-    void HandleAttack(string attack)
+    void HandleAttack(string attackKey)
     {
-        bool hasHit = false;
-        bool hitSuccessful = false;
+        bool matchedAttack = false;
+
+        if (dollAttackManager.attack1 != null && dollAttackManager.attack1.attackName == attackKey)
+            matchedAttack = true;
+
+        if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attackKey)
+            matchedAttack = true;
+
+        if (!matchedAttack && (dollAttackManager.attack1 != null || dollAttackManager.attack2 != null))
+        {
+            Debug.Log("Wrong button pressed!");
+
+            comboFailed = true;
+            isAttackedFalse = true;
+
+            if (dollAttackManager.attack1 != null)
+            {
+                dollAttackManager.attack2.isGreen = false;
+                WrongTiming(dollAttackManager.attack1);
+            }
+
+            return;
+        }
+
+        //bool hasHit = false;
+        //bool hitSuccessful = false;
 
         isAttackedFalse = false;
 
-        if (dollAttackManager.attack1 != null && dollAttackManager.attack1.attackName == attack)
+        if (dollAttackManager.attack1 != null && dollAttackManager.attack2 != null)
         {
-            if (dollAttackManager.attack1.isGreen)
+            if (!comboActive)
             {
-                isAttackedFalse = false;
-                hitSuccessful = true;
-                DollGotHit();
-                dollAttackManager.attack1Frozen = true;
-                StartCoroutine(DissapearAfterDelay(correctWaitTime));
+                comboActive = true;
+                comboFailed = false;
+                comboStartTime = Time.time;
 
-                Debug.Log(attack + " : successfully hit!");
+                currentCombo.Clear();
+                currentCombo.Add(dollAttackManager.attack1);
+                currentCombo.Add(dollAttackManager.attack2);
             }
-            else
+
+            foreach (var comboAttack in currentCombo)
             {
-                isAttackedFalse = true;
-                hasHit = true;
-                WrongTiming(dollAttackManager.attack1);
-                Debug.Log(attack + " : wrong timing!");
+                if (comboAttack.attackName == attackKey)
+                {
+                    if (comboAttack.isGreen)
+                    {
+                        comboAttack.wasHit = true;
+                        Debug.Log(attackKey + " : hit correctly");
+
+                        if (comboAttack == dollAttackManager.attack1)
+                        {
+                            ComboFreeze(1);
+                        }
+                        else
+                        {
+                            ComboFreeze(0);
+                        }
+                    }
+                    else
+                    {
+                        comboFailed = true;
+                        Debug.Log(attackKey + " : wrong timing → combo fail");
+                    }
+                }
+            }
+
+            bool allHit = true;
+            foreach (var comboAttack in currentCombo)
+            {
+                if (!comboAttack.wasHit) allHit = false;
+            }
+
+            // Resolve combo if window expired or all attacks hit
+            if (Time.time - comboStartTime > comboWindow || allHit)
+            {
+                ResolveCombo();
             }
         }
-
-        if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attack)
+        else // Single attack
         {
-            if (dollAttackManager.attack2.isGreen)
-            {
-                isAttackedFalse = false;
-                hitSuccessful = true;
-                DollGotHit();
-                dollAttackManager.attack2Frozen = true;
-                StartCoroutine(DissapearAfterDelay(correctWaitTime));
-                Debug.Log(attack + " : successfully hit!");
-            }
-            else
-            {
-                isAttackedFalse = true;
-                hasHit = true;
-                WrongTiming(dollAttackManager.attack2);
-                Debug.Log(attack + " : wrong timing!");
-            }
+            HandleSingleAttack(attackKey);
         }
+
+        //if (dollAttackManager.attack1 != null && dollAttackManager.attack1.attackName == attack)
+        //{
+        //    if (dollAttackManager.attack1.isGreen)
+        //    {
+        //        isAttackedFalse = false;
+        //        hitSuccessful = true;
+        //        DollGotHit();
+        //        dollAttackManager.attack1Frozen = true;
+        //        StartCoroutine(DissapearAfterDelay(correctWaitTime));
+
+        //        Debug.Log(attack + " : successfully hit!");
+        //    }
+        //    else
+        //    {
+        //        isAttackedFalse = true;
+        //        hasHit = true;
+        //        WrongTiming(dollAttackManager.attack1);
+        //        Debug.Log(attack + " : wrong timing!");
+        //    }
+        //}
+
+        //if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attack)
+        //{
+        //    if (dollAttackManager.attack2.isGreen)
+        //    {
+        //        isAttackedFalse = false;
+        //        hitSuccessful = true;
+        //        DollGotHit();
+        //        dollAttackManager.attack2Frozen = true;
+        //        StartCoroutine(DissapearAfterDelay(correctWaitTime));
+        //        Debug.Log(attack + " : successfully hit!");
+        //    }
+        //    else
+        //    {
+        //        isAttackedFalse = true;
+        //        hasHit = true;
+        //        WrongTiming(dollAttackManager.attack2);
+        //        Debug.Log(attack + " : wrong timing!");
+        //    }
+        //}
 
         //if (!hitSuccessful && !hasHit)
         //{
         //    DollGotHit();
         //    Debug.Log(attack + " : hit!");
         //}
+    }
+
+    void HandleSingleAttack(string attackKey)
+    {
+        if (dollAttackManager.attack1 != null && dollAttackManager.attack1.attackName == attackKey)
+        {
+            if (dollAttackManager.attack1.isGreen)
+            {
+                DollGotHit();
+                dollAttackManager.attack1Frozen = true;
+                StartCoroutine(DissapearAfterDelay(correctWaitTime));
+                Debug.Log(attackKey + " : successfully hit!");
+            }
+            else
+            {
+                isAttackedFalse = true;
+                WrongTiming(dollAttackManager.attack1);
+                Debug.Log(attackKey + " : wrong timing");
+            }
+        }
+
+        if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attackKey)
+        {
+            if (dollAttackManager.attack2.isGreen)
+            {
+                DollGotHit();
+                dollAttackManager.attack2Frozen = true;
+                StartCoroutine(DissapearAfterDelay(correctWaitTime));
+                Debug.Log(attackKey + " : successfully hit!");
+            }
+            else
+            {
+                isAttackedFalse = true;
+                WrongTiming(dollAttackManager.attack2);
+                Debug.Log(attackKey + " : wrong timing!");
+            }
+        }
+    }
+
+    void ResolveCombo()
+    {
+        if (comboFailed)
+        {
+            dollAttackManager.attack2.isGreen = false;
+            WrongTiming(dollAttackManager.attack1);
+            Debug.Log("Combo failed → player loses health");
+            playerHealthManager.loseHealth(playerAttackAmount);
+        }
+        else
+        {
+            Debug.Log("Combo successful → doll loses health once");
+            StartCoroutine(DissapearAfterDelay(correctWaitTime));
+            DollGotHit();
+        }
+
+        // Reset combo
+        foreach (var attack in currentCombo)
+        {
+            attack.wasHit = false;
+        }
+        comboActive = false;
+        comboFailed = false;
+        currentCombo.Clear();
     }
 
     void HandleCPR()
@@ -161,9 +311,25 @@ public class PlayerAttackManager : MonoBehaviour
 
     private IEnumerator DissapearAfterDelay(float delay)
     {
+        if (dollAttackManager.attack1 != null) dollAttackManager.attack1Frozen = true;
+
+        if (dollAttackManager.attack2 != null) dollAttackManager.attack2Frozen = true;
+
         yield return new WaitForSeconds(delay);
 
         dollAttackManager.EndCurrentAttack();
+    }
+
+    void ComboFreeze(int isFirst)
+    {
+        if (isFirst == 0)
+        {
+            if (dollAttackManager.attack2 != null) dollAttackManager.attack2Frozen = true;
+        }
+        else
+        {
+            if (dollAttackManager.attack1 != null) dollAttackManager.attack1Frozen = true;
+        }
     }
 
     public IEnumerator AttackAnimation()

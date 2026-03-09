@@ -18,7 +18,6 @@ public class PlayerHealthManager : MonoBehaviour
         playerHealthSlider.value = Data.playerHealth;
 
         deathUI.SetActive(false);
-
     }
 
     public void loseHealth(float hitAmount)
