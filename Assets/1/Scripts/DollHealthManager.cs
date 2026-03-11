@@ -47,14 +47,32 @@ public class DollHealthManager : MonoBehaviour
         else if (Data.dollHealth < 33)
         {
             dollHealthSliderFill.color = lowHealthCol;
+            Data.isStage3 = true;
         }
         else if (Data.dollHealth < 66)
         {
             dollHealthSliderFill.color = midHealthCol;
+            Data.isStage2 = true;
         }
         else
         {
             dollHealthSliderFill.color = highHealthCol;
+        }
+
+        if (Data.isStage3)
+        {
+            Data.ringSpeed = Data.ringFastSpeed;
+            Data.soulSpeed = Data.soulFastSpeed;
+        }
+        else if (Data.isStage2)
+        {
+            Data.ringSpeed = Data.ringMediumSpeed;
+            Data.soulSpeed = Data.soulMediumSpeed;
+        }
+        else if (Data.isStage1)
+        {
+            Data.ringSpeed = Data.ringSlowSpeed;
+            Data.soulSpeed = Data.soulSlowSpeed;
         }
     }
 }

@@ -18,8 +18,14 @@ public class Restart : MonoBehaviour
     public void TryAgain()
     {
         Data.dollHealth = 100;
-        Data.friendHealth = 3;
         Data.playerHealth = 100;
+
+        Data.ringSpeed = Data.ringSlowSpeed;
+        Data.soulSpeed = Data.soulSlowSpeed;
+
+        Data.isStage1 = true;
+        Data.isStage2 = false;
+        Data.isStage3 = false;
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

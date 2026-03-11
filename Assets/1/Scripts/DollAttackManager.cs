@@ -15,9 +15,6 @@ public class DollAttackManager : MonoBehaviour
     public GameObject rightLegAttackUI;
     public GameObject cprUI;
 
-
-
-
     private List<GameObject> attackUIList;
 
     public float ringSizeMin = 0.9f;
@@ -96,8 +93,17 @@ public class DollAttackManager : MonoBehaviour
 
         yield return new WaitForSeconds(attackTimeRange);
 
-        //Randomly select one or two attacks
-        int isCombo = Random.Range(0, 2);
+        int isCombo;
+
+        if (Data.isStage2)
+        {
+            //Randomly select one or two attacks
+            isCombo = Random.Range(0, 2);
+        }
+        else
+        {
+            isCombo = 0;
+        }
 
         if (isCombo == 0)
         {
@@ -144,7 +150,8 @@ public class DollAttackManager : MonoBehaviour
 
     private IEnumerator StartAttack()
     {
-        float isSoulFollow = Random.Range(0, 2);
+        float isSoulFollow = Random.Range(0f, 2f);
+        Debug.Log(isSoulFollow);
 
         if (isSoulFollow <= 1.5f && soulMovement != null)
         {
@@ -173,7 +180,9 @@ public class DollAttackManager : MonoBehaviour
                 if (ringScale1.x <= ringCorrectMax)
                 {
                     attack1.isGreen = true;
-                    attack1.ringImage.color = Color.green;
+                    Color c = Color.green;
+                    c.a = attack1.ringImage.color.a;
+                    attack1.ringImage.color = c;
                 }
 
                 if (ringScale1.x <= ringSizeMin)
@@ -194,7 +203,9 @@ public class DollAttackManager : MonoBehaviour
                 if (ringScale2.x <= ringCorrectMax)
                 {
                     attack2.isGreen = true;
-                    attack2.ringImage.color = Color.green;
+                    Color c = Color.green;
+                    c.a = attack2.ringImage.color.a;
+                    attack1.ringImage.color = c;
                 }
 
                 if (ringScale2.x <= ringSizeMin)
@@ -220,8 +231,15 @@ public class DollAttackManager : MonoBehaviour
         if (selectedAttack1 != null && attack1 != null)
         {
             selectedAttack1.SetActive(false);
-            attack1.ringImage.color = Color.white;
-            attack1.circleImage.color = Color.white;
+
+            Color r = Color.white;
+            r.a = attack1.ringImage.color.a;
+            attack1.ringImage.color = r;
+
+            Color c = Color.white;
+            c.a = attack1.circleImage.color.a;
+            attack1.ringImage.color = c;
+
             attack1.isGreen = false;
             attack1Frozen = false;
         }
@@ -229,8 +247,15 @@ public class DollAttackManager : MonoBehaviour
         if (selectedAttack2 != null && attack2 != null)
         {
             selectedAttack2.SetActive(false);
-            attack2.ringImage.color = Color.white;
-            attack2.circleImage.color = Color.white;
+
+            Color r = Color.white;
+            r.a = attack2.ringImage.color.a;
+            attack1.ringImage.color = r;
+
+            Color c = Color.white;
+            c.a = attack2.circleImage.color.a;
+            attack1.ringImage.color = c;
+
             attack2.isGreen = false;
             attack2Frozen = false;
         }
@@ -276,8 +301,13 @@ public class DollAttackManager : MonoBehaviour
         Image ringImage = ring.GetComponent<Image>();
         Image circleImage = attackUI.transform.GetChild(1).GetComponent<Image>();
 
-        ringImage.color = Color.white;
-        circleImage.color = Color.white;
+        Color r = Color.white;
+        r.a = ringImage.color.a;
+        ringImage.color = r;
+
+        Color c = Color.white;
+        c.a = circleImage.color.a;
+        ringImage.color = c;
 
         return new ActiveAttack
         {

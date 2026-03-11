@@ -122,7 +122,11 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Soul_Position: {r: -101.42675, g: -184.85034, b: 0, a: 0}
+<<<<<<< HEAD
+    - _Soul_Position: {r: -87.209076, g: -158.93877, b: 0, a: 0}
+=======
+    - _Soul_Position: {r: 146.26483, g: -266.5679, b: 0, a: 0}
+>>>>>>> main
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
