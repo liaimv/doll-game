@@ -5,8 +5,6 @@ public class SoulMovement : MonoBehaviour
     public Transform StartPos;
     public Transform[] BodyParts;
 
-    public float speed = 2f;
-
     private Vector3 destination;
 
     private bool goingToParts = true;
@@ -19,27 +17,28 @@ public class SoulMovement : MonoBehaviour
     private Transform previousPart;
     private Transform currentPart;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         transform.position = StartPos.position;
         Move();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (isRandom)
         {
             //speed += 2f;
-            transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime * 100);
+            transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
 
 
             if (Vector3.Distance(transform.position, destination) < 0.05f)
             {
                 if (goingToParts)
                 {
-                    destination = StartPos.position;
+                    if (!movingToCenter && !movingToAttack)
+                    {
+                        destination = StartPos.position;
+                    }
                     previousPart = currentPart;
                     goingToParts = false;
                 }
@@ -52,7 +51,7 @@ public class SoulMovement : MonoBehaviour
 
         if (movingToCenter)
         {
-            transform.position = Vector3.MoveTowards(transform.position, StartPos.position, speed * Time.deltaTime * 100);
+            transform.position = Vector3.MoveTowards(transform.position, StartPos.position, Data.soulSpeed * Time.deltaTime * 100);
 
             if (Vector3.Distance(transform.position, StartPos.position) < 0.05f)
             {
@@ -64,7 +63,7 @@ public class SoulMovement : MonoBehaviour
 
         if (movingToAttack)
         {
-            transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime * 100);
+            transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
 
             if (Vector3.Distance(transform.position, destination) < 0.05f)
             {
