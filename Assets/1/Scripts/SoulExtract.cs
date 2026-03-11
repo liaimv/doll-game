@@ -4,7 +4,7 @@ using TMPro;
 
 public class SoulExtract : MonoBehaviour
 {
-    public float rescueThreshold = 25f;
+    public float rescueThreshold = 10f;
     public int pressesNeeded = 8;
     public float healAmount = 20f;
 

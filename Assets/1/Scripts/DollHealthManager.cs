@@ -36,13 +36,13 @@ public class DollHealthManager : MonoBehaviour
     }
     public void loseHealth()
     {
-
         dollHealthSlider.value = Data.dollHealth;
 
         if (Data.dollHealth <= 0)
         {
             dollHealthSliderFill.color = lowHealthCol;
             deathUI.SetActive(true);
+            return;
         }
         else if (Data.dollHealth < 33)
         {
