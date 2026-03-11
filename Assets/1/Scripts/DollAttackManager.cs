@@ -58,6 +58,8 @@ public class DollAttackManager : MonoBehaviour
 
     private PlayerAttackManager playerAttackManager;
 
+    public SoulMovement soulMovement;
+
     void Start()
     {
         playerAttackManager = GetComponent<PlayerAttackManager>();
@@ -142,6 +144,14 @@ public class DollAttackManager : MonoBehaviour
 
     private IEnumerator StartAttack()
     {
+        float isSoulFollow = Random.Range(0, 2);
+
+        if (isSoulFollow <= 1.5f && soulMovement != null)
+        {
+            soulMovement.SoulMoveToAttack(attack1.attackName);
+            Debug.Log("Soul going to attack location");
+        }
+
         isAttacking = true;
         attack1Frozen = false;
         attack2Frozen = false;
@@ -235,6 +245,11 @@ public class DollAttackManager : MonoBehaviour
         {
             StopCoroutine(currentAttackCoroutine);
             currentAttackCoroutine = null;
+        }
+
+        if (soulMovement != null)
+        {
+            soulMovement.SoulRandomMovement();
         }
 
         float nextWait = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
