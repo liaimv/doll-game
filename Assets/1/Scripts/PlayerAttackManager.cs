@@ -28,6 +28,8 @@ public class PlayerAttackManager : MonoBehaviour
     public float comboWindow = 0.2f;    
     private List<ActiveAttack> currentCombo = new List<ActiveAttack>();
 
+    public SoulLivesManager soulLivesManager;
+
     void Start()
     {
         playerHealthManager = GetComponent<PlayerHealthManager>();
@@ -59,6 +61,8 @@ public class PlayerAttackManager : MonoBehaviour
 
         if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attackKey)
             matchedAttack = true;
+
+        if (soulLivesManager != null) soulLivesManager.HitSoul(attackKey);
 
         if (!matchedAttack && (dollAttackManager.attack1 != null || dollAttackManager.attack2 != null))
         {
@@ -136,53 +140,6 @@ public class PlayerAttackManager : MonoBehaviour
         {
             HandleSingleAttack(attackKey);
         }
-
-        //if (dollAttackManager.attack1 != null && dollAttackManager.attack1.attackName == attack)
-        //{
-        //    if (dollAttackManager.attack1.isGreen)
-        //    {
-        //        isAttackedFalse = false;
-        //        hitSuccessful = true;
-        //        DollGotHit();
-        //        dollAttackManager.attack1Frozen = true;
-        //        StartCoroutine(DissapearAfterDelay(correctWaitTime));
-
-        //        Debug.Log(attack + " : successfully hit!");
-        //    }
-        //    else
-        //    {
-        //        isAttackedFalse = true;
-        //        hasHit = true;
-        //        WrongTiming(dollAttackManager.attack1);
-        //        Debug.Log(attack + " : wrong timing!");
-        //    }
-        //}
-
-        //if (dollAttackManager.attack2 != null && dollAttackManager.attack2.attackName == attack)
-        //{
-        //    if (dollAttackManager.attack2.isGreen)
-        //    {
-        //        isAttackedFalse = false;
-        //        hitSuccessful = true;
-        //        DollGotHit();
-        //        dollAttackManager.attack2Frozen = true;
-        //        StartCoroutine(DissapearAfterDelay(correctWaitTime));
-        //        Debug.Log(attack + " : successfully hit!");
-        //    }
-        //    else
-        //    {
-        //        isAttackedFalse = true;
-        //        hasHit = true;
-        //        WrongTiming(dollAttackManager.attack2);
-        //        Debug.Log(attack + " : wrong timing!");
-        //    }
-        //}
-
-        //if (!hitSuccessful && !hasHit)
-        //{
-        //    DollGotHit();
-        //    Debug.Log(attack + " : hit!");
-        //}
     }
 
     void HandleSingleAttack(string attackKey)
@@ -271,8 +228,15 @@ public class PlayerAttackManager : MonoBehaviour
         if (cprManager == null || cprManager.cprAttack == null) return;
 
         cprManager.cprAttack.isGreen = false;
-        cprManager.cprAttack.circleImage.color = Color.red;
-        cprManager.cprAttack.ringImage.color = Color.red;
+
+        Color c = Color.red;
+        c.a = cprManager.cprAttack.circleImage.color.a;
+        cprManager.cprAttack.circleImage.color = c;
+
+        Color r = Color.red;
+        r.a = cprManager.cprAttack.ringImage.color.a;
+        cprManager.cprAttack.ringImage.color = r;
+
         cprManager.cprFrozen = true;
 
         StartCoroutine(CPRDisappearAfterDelay(penaltyWaitTime));
@@ -294,15 +258,27 @@ public class PlayerAttackManager : MonoBehaviour
 
         if (dollAttackManager.attack1 != null)
         {
-            dollAttackManager.attack1.circleImage.color = Color.red;
-            dollAttackManager.attack1.ringImage.color = Color.red;
+            Color c = Color.red;
+            c.a = dollAttackManager.attack1.circleImage.color.a;
+            dollAttackManager.attack1.circleImage.color = c;
+
+            Color r = Color.red;
+            r.a = dollAttackManager.attack1.ringImage.color.a;
+            dollAttackManager.attack1.ringImage.color = r;
+
             dollAttackManager.attack1Frozen = true;
         }
 
         if (dollAttackManager.attack2 != null)
         {
-            dollAttackManager.attack2.circleImage.color = Color.red;
-            dollAttackManager.attack2.ringImage.color = Color.red;
+            Color c = Color.red;
+            c.a = dollAttackManager.attack2.circleImage.color.a;
+            dollAttackManager.attack2.circleImage.color = c;
+
+            Color r = Color.red;
+            r.a = dollAttackManager.attack2.ringImage.color.a;
+            dollAttackManager.attack2.ringImage.color = r;
+
             dollAttackManager.attack2Frozen = true;
         }
 
