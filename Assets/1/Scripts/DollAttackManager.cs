@@ -56,6 +56,7 @@ public class DollAttackManager : MonoBehaviour
     private PlayerAttackManager playerAttackManager;
 
     public SoulMovement soulMovement;
+    public bool attacksPausedForCPR = false;
 
     void Start()
     {
@@ -85,6 +86,9 @@ public class DollAttackManager : MonoBehaviour
 
     private IEnumerator AttackSequence(float attackTimeRange)
     {
+        if (attacksPausedForCPR || Data.dollHealth <= 0)
+            yield break;
+
         if (attack1 != null) attack1 = null;
         if (attack2 != null) attack2 = null;
 
@@ -93,11 +97,13 @@ public class DollAttackManager : MonoBehaviour
 
         yield return new WaitForSeconds(attackTimeRange);
 
+        if (attacksPausedForCPR || Data.dollHealth <= 0)
+            yield break;
+
         int isCombo;
 
         if (Data.isStage2)
         {
-            //Randomly select one or two attacks
             isCombo = Random.Range(0, 2);
         }
         else
@@ -129,7 +135,6 @@ public class DollAttackManager : MonoBehaviour
         CreateAttack();
         currentStartAttackCoroutine = StartCoroutine(StartAttack());
     }
-
     private void CreateAttack()
     {
         if (selectedAttack1 != null)
@@ -167,6 +172,12 @@ public class DollAttackManager : MonoBehaviour
 
         while (isAttacking)
         {
+            if (attacksPausedForCPR || Data.dollHealth <= 0)
+            {
+                isAttacking = false;
+                yield break;
+            }
+
             bool attackEnded = false;
 
             if (!attack1Frozen && selectedAttack1 != null && attack1 != null)
@@ -222,10 +233,9 @@ public class DollAttackManager : MonoBehaviour
                 isAttacking = false;
             }
 
-            yield return null; 
+            yield return null;
         }
     }
-
     public void EndCurrentAttack()
     {
         if (selectedAttack1 != null && attack1 != null)
@@ -319,6 +329,48 @@ public class DollAttackManager : MonoBehaviour
             isGreen = false
 };
     }
+
+    public void StopAttacksForCPR()
+    {
+        attacksPausedForCPR = true;
+        isAttacking = false;
+
+        if (currentStartAttackCoroutine != null)
+        {
+            StopCoroutine(currentStartAttackCoroutine);
+            currentStartAttackCoroutine = null;
+        }
+
+        if (currentAttackCoroutine != null)
+        {
+            StopCoroutine(currentAttackCoroutine);
+            currentAttackCoroutine = null;
+        }
+
+        if (headAttackUI != null) headAttackUI.SetActive(false);
+        if (leftArmAttackUI != null) leftArmAttackUI.SetActive(false);
+        if (rightArmAttackUI != null) rightArmAttackUI.SetActive(false);
+        if (leftLegAttackUI != null) leftLegAttackUI.SetActive(false);
+        if (rightLegAttackUI != null) rightLegAttackUI.SetActive(false);
+
+        attack1 = null;
+        attack2 = null;
+        attack1Frozen = false;
+        attack2Frozen = false;
+    }
+
+    public void ResumeAttacksAfterCPR()
+    {
+        if (Data.dollHealth <= 0) return;
+
+        attacksPausedForCPR = false;
+
+        float nextWait = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
+        currentAttackCoroutine = StartCoroutine(AttackSequence(nextWait));
+    }
+
+
+
 }
 
 public class ActiveAttack

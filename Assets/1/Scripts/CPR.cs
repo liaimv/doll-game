@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class CPR : MonoBehaviour
 {
-    public float cprThreshold = 10f;
+    public float cprThreshold = 20f;
     public int pressesNeeded = 3;
     public float healAmount = 20f;
 
@@ -18,12 +18,17 @@ public class CPR : MonoBehaviour
 
     private bool cprTriggered = false;
 
+    public GameObject deathUI;
+
     void Start()
     {
         dollAttackManager = GetComponent<DollAttackManager>();
         dollHealthManager = GetComponent<DollHealthManager>();
 
-        if (dollAttackManager.cprUI != null)
+        if (deathUI != null)
+            deathUI.SetActive(false);
+
+        if (dollAttackManager != null && dollAttackManager.cprUI != null)
         {
             dollAttackManager.cprUI.SetActive(false);
         }
@@ -31,7 +36,7 @@ public class CPR : MonoBehaviour
 
     void Update()
     {
-        if (!cprTriggered && Data.dollHealth <= cprThreshold && Data.dollHealth > 0)
+        if (!cprTriggered && !cprActive && Data.dollHealth <= cprThreshold && Data.dollHealth > 0)
         {
             StartCPR();
         }
@@ -49,11 +54,16 @@ public class CPR : MonoBehaviour
 
     public void StartCPR()
     {
-        if (dollAttackManager.cprUI == null) return;
+        if (dollAttackManager == null || dollAttackManager.cprUI == null) return;
+        if (Data.dollHealth <= 0) return;
 
         cprActive = true;
         cprFrozen = false;
         cprTriggered = true;
+        successfulPresses = 0;
+
+        // FULLY stop all current attacks
+        dollAttackManager.StopAttacksForCPR();
 
         GameObject ui = dollAttackManager.cprUI;
         ui.SetActive(true);
@@ -81,13 +91,13 @@ public class CPR : MonoBehaviour
             isGreen = false
         };
 
-        successfulPresses = 0;
-
         Debug.Log("CPR started");
     }
 
     void RunCPRRing()
     {
+        if (!cprActive || cprAttack == null) return;
+
         Vector3 scale = cprAttack.ringObject.transform.localScale;
         scale -= Vector3.one * Data.ringSpeed * Time.deltaTime;
         cprAttack.ringObject.transform.localScale = scale;
@@ -98,29 +108,36 @@ public class CPR : MonoBehaviour
             cprAttack.ringImage.color = Color.green;
         }
 
+        // ONE MISS = INSTANT DEATH
         if (scale.x <= dollAttackManager.ringSizeMin)
         {
-            cprFrozen = true;
+            Debug.Log("CPR failed: missed even once");
+            CPRFail();
         }
     }
 
     public void CPRSuccess()
     {
+        if (!cprActive || cprAttack == null) return;
+
         successfulPresses++;
         Debug.Log("CPR success " + successfulPresses);
 
         if (successfulPresses >= pressesNeeded)
         {
-            dollHealthManager.GainHealth(healAmount);
-            EndCurrentCPR();
-            Debug.Log("CPR completed, doll healed");
-        }
-        else
-        {
-            ResetCPRRing();
-        }
-    }
+            cprActive = false;
+            cprFrozen = true;
 
+            dollHealthManager.GainHealth(healAmount);
+            Debug.Log("CPR completed, doll healed");
+
+            EndCurrentCPR();
+            dollAttackManager.ResumeAttacksAfterCPR();
+            return;
+        }
+
+        ResetCPRRing();
+    }
     void ResetCPRRing()
     {
         if (cprAttack == null) return;
@@ -136,6 +153,25 @@ public class CPR : MonoBehaviour
 
         cprAttack.ringImage.color = Color.white;
         cprAttack.circleImage.color = Color.white;
+    }
+
+    public void CPRFail()
+    {
+        if (!cprActive || cprAttack == null) return;
+
+        cprActive = false;
+        cprFrozen = true;
+
+        Debug.Log("CPR failed - instant death");
+        Data.dollHealth = 0;
+
+        if (dollHealthManager != null)
+        {
+            dollHealthManager.loseHealth();
+        }
+
+        deathUI.SetActive(true);
+        EndCurrentCPR();
     }
 
     public void EndCurrentCPR()
