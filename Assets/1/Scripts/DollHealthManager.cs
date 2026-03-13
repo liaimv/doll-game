@@ -12,12 +12,19 @@ public class DollHealthManager : MonoBehaviour
     private Image dollHealthSliderFill;
     public GameObject deathUI;
 
+    public Animator[] animators;
+
     void Start()
     {
         dollHealthSliderFill = dollHealthSlider.gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).GetComponent<Image>();
         dollHealthSliderFill.color = highHealthCol;
         dollHealthSlider.value = Data.dollHealth;
         deathUI.SetActive(false);
+
+        foreach (Animator animator in animators)
+        {
+            animator.speed = Data.animationSlowSpeed;
+        }
     }
 
     public void loseHealth(float hitAmount)
@@ -63,16 +70,31 @@ public class DollHealthManager : MonoBehaviour
         {
             Data.ringSpeed = Data.ringFastSpeed;
             Data.soulSpeed = Data.soulFastSpeed;
+
+            foreach (Animator animator in animators)
+            {
+                animator.speed = Data.animationFastSpeed;
+            }
         }
         else if (Data.isStage2)
         {
             Data.ringSpeed = Data.ringMediumSpeed;
             Data.soulSpeed = Data.soulMediumSpeed;
+
+            foreach (Animator animator in animators)
+            {
+                animator.speed = Data.animationMediumSpeed;
+            }
         }
         else if (Data.isStage1)
         {
             Data.ringSpeed = Data.ringSlowSpeed;
             Data.soulSpeed = Data.soulSlowSpeed;
+
+            foreach (Animator animator in animators)
+            {
+                animator.speed = Data.animationSlowSpeed;
+            }
         }
     }
 }

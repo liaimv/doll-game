@@ -25,50 +25,104 @@ public class SoulMovement : MonoBehaviour
 
     void Update()
     {
-        if (isRandom)
-        {
-            //speed += 2f;
-            transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
-
-
-            if (Vector3.Distance(transform.position, destination) < 0.05f)
-            {
-                if (goingToParts)
-                {
-                    if (!movingToCenter && !movingToAttack)
-                    {
-                        destination = StartPos.position;
-                    }
-                    previousPart = currentPart;
-                    goingToParts = false;
-                }
-                else
-                {
-                    Move();
-                }
-            }
-        }
-
         if (movingToCenter)
         {
-            transform.position = Vector3.MoveTowards(transform.position, StartPos.position, Data.soulSpeed * Time.deltaTime * 100);
-
-            if (Vector3.Distance(transform.position, StartPos.position) < 0.05f)
-            {
-                movingToCenter = false;
-                movingToAttack = true;
-                destination = attackTarget.position;
-            }
+            MoveToCenter();
+        }
+        else if (movingToAttack)
+        {
+            MoveToAttack();
+        }
+        else if (isRandom)
+        {
+            RandomMovement();
         }
 
-        if (movingToAttack)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
+        //if (isRandom)
+        //{
+        //    //speed += 2f;
+        //    transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
 
-            if (Vector3.Distance(transform.position, destination) < 0.05f)
+
+        //    if (Vector3.Distance(transform.position, destination) < 0.05f)
+        //    {
+        //        if (goingToParts)
+        //        {
+        //            if (!movingToCenter && !movingToAttack)
+        //            {
+        //                destination = StartPos.position;
+        //            }
+        //            previousPart = currentPart;
+        //            goingToParts = false;
+        //        }
+        //        else
+        //        {
+        //            Move();
+        //        }
+        //    }
+        //}
+
+        //if (movingToCenter)
+        //{
+        //    transform.position = Vector3.MoveTowards(transform.position, StartPos.position, Data.soulSpeed * Time.deltaTime * 100);
+
+        //    if (Vector3.Distance(transform.position, StartPos.position) < 0.05f)
+        //    {
+        //        movingToCenter = false;
+        //        movingToAttack = true;
+        //        destination = attackTarget.position;
+        //    }
+        //}
+
+        //if (movingToAttack)
+        //{
+        //    transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
+
+        //    if (Vector3.Distance(transform.position, destination) < 0.05f)
+        //    {
+        //        movingToAttack = false;
+        //    }
+        //}
+    }
+
+    void RandomMovement()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
+
+        if (Vector3.Distance(transform.position, destination) < 0.05f)
+        {
+            if (goingToParts)
             {
-                movingToAttack = false;
+                previousPart = currentPart;
+                destination = StartPos.position;
+                goingToParts = false;
             }
+            else
+            {
+                Move();
+            }
+        }
+    }
+
+    void MoveToCenter()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, StartPos.position, Data.soulSpeed * Time.deltaTime * 100);
+
+        if (Vector3.Distance(transform.position, StartPos.position) < 0.05f)
+        {
+            movingToCenter = false;
+            movingToAttack = true;
+            destination = attackTarget.position;
+        }
+    }
+
+    void MoveToAttack()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, destination, Data.soulSpeed * Time.deltaTime * 100);
+
+        if (Vector3.Distance(transform.position, destination) < 0.05f)
+        {
+            movingToAttack = false;
         }
     }
 
@@ -114,13 +168,13 @@ public class SoulMovement : MonoBehaviour
 
         Vector3 attackPos = attackTarget.position;
 
-        if (goingToParts && currentPart != null && currentPart.position == attackPos)
+        if (goingToParts && currentPart != null && Vector3.Distance(currentPart.position, attackPos) < 0.01f)
         {
             movingToAttack = true;
             return;
         }
 
-        if (!goingToParts && previousPart != null && previousPart.position == attackPos)
+        if (!goingToParts && previousPart != null && Vector3.Distance(previousPart.position, attackPos) < 0.01f)
         {
             movingToAttack = true;
             destination = attackPos;

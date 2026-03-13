@@ -1,11 +1,19 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DollAttackManager : MonoBehaviour
 {
+    [Header("BodyParts")]
+    public Animator headAnimator;
+    public Animator leftArmAnimator;
+    public Animator rightArmAnimator;
+    public Animator leftLegAnimator;
+    public Animator rightLegAnimator;
+
     [Header("AttackUI")]
     public GameObject headAttackUI;
     //public GameObject bodyAttackUI;
@@ -168,6 +176,16 @@ public class DollAttackManager : MonoBehaviour
         attack1Frozen = false;
         attack2Frozen = false;
 
+        if (attack1 != null)
+        {
+            TriggerAttackAnimation(attack1.attackName);
+        }
+
+        if (attack2 != null)
+        {
+            TriggerAttackAnimation(attack2.attackName);
+        }
+
         StartCoroutine(playerAttackManager.AttackAnimation());
 
         while (isAttacking)
@@ -216,7 +234,7 @@ public class DollAttackManager : MonoBehaviour
                     attack2.isGreen = true;
                     Color c = Color.green;
                     c.a = attack2.ringImage.color.a;
-                    attack1.ringImage.color = c;
+                    attack2.ringImage.color = c;
                 }
 
                 if (ringScale2.x <= ringSizeMin)
@@ -236,19 +254,45 @@ public class DollAttackManager : MonoBehaviour
             yield return null;
         }
     }
+
+    void TriggerAttackAnimation(string attackName)
+    {
+        switch (attackName)
+        {
+            case "Head":
+                if (headAnimator != null)
+                    headAnimator.SetTrigger("Attack");
+                break;
+
+            case "LeftArm":
+                if (leftArmAnimator != null)
+                    leftArmAnimator.SetTrigger("Attack");
+                break;
+
+            case "RightArm":
+                if (rightArmAnimator != null)
+                    rightArmAnimator.SetTrigger("Attack");
+                break;
+
+            case "LeftLeg":
+                if (leftLegAnimator != null)
+                    leftLegAnimator.SetTrigger("Attack");
+                break;
+
+            case "RightLeg":
+                if (rightLegAnimator != null)
+                    rightLegAnimator.SetTrigger("Attack");
+                break;
+        }
+    }
+
     public void EndCurrentAttack()
     {
         if (selectedAttack1 != null && attack1 != null)
         {
             selectedAttack1.SetActive(false);
 
-            Color r = Color.white;
-            r.a = attack1.ringImage.color.a;
-            attack1.ringImage.color = r;
-
-            Color c = Color.white;
-            c.a = attack1.circleImage.color.a;
-            attack1.ringImage.color = c;
+            ResetAttackColors(attack1);
 
             attack1.isGreen = false;
             attack1Frozen = false;
@@ -258,13 +302,7 @@ public class DollAttackManager : MonoBehaviour
         {
             selectedAttack2.SetActive(false);
 
-            Color r = Color.white;
-            r.a = attack2.ringImage.color.a;
-            attack1.ringImage.color = r;
-
-            Color c = Color.white;
-            c.a = attack2.circleImage.color.a;
-            attack1.ringImage.color = c;
+            ResetAttackColors(attack2);
 
             attack2.isGreen = false;
             attack2Frozen = false;
@@ -305,6 +343,17 @@ public class DollAttackManager : MonoBehaviour
         return "";
     }
 
+    void ResetAttackColors(ActiveAttack attack)
+    {
+        Color r = Color.white;
+        r.a = attack.ringImage.color.a;
+        attack.ringImage.color = r;
+
+        Color c = Color.white;
+        c.a = attack.circleImage.color.a;
+        attack.circleImage.color = c;
+    }
+
     ActiveAttack CreateAttack(GameObject attackUI)
     {
         GameObject ring = attackUI.transform.GetChild(0).gameObject;
@@ -317,7 +366,7 @@ public class DollAttackManager : MonoBehaviour
 
         Color c = Color.white;
         c.a = circleImage.color.a;
-        ringImage.color = c;
+        circleImage.color = c;
 
         return new ActiveAttack
         {
@@ -327,7 +376,7 @@ public class DollAttackManager : MonoBehaviour
             circleImage = circleImage,
             attackName = GetKeyForAttack(attackUI.name),
             isGreen = false
-};
+        };
     }
 
     public void StopAttacksForCPR()
@@ -368,9 +417,6 @@ public class DollAttackManager : MonoBehaviour
         float nextWait = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
         currentAttackCoroutine = StartCoroutine(AttackSequence(nextWait));
     }
-
-
-
 }
 
 public class ActiveAttack

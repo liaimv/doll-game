@@ -52,11 +52,11 @@ public class SoulExtract : MonoBehaviour
         if (rescueActive)
         {
         
-            if (Data.dollHealth <= 0)
-            {
-                FailRescue();
-                return;
-            }
+            //if (Data.dollHealth <= 0)
+            //{
+            //    FailRescue();
+            //    return;
+            //}
 
             MoveSoulToCenterAndShake();
             HandleComboInput();
