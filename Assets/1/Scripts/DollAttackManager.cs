@@ -4,10 +4,22 @@ using System.Collections.Generic;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using UnityEditor.Rendering;
 
 public class DollAttackManager : MonoBehaviour
 {
-    [Header("BodyParts")]
+    [Header("Body Parts")]
+    public GameObject headObject;
+    public GameObject leftArmObject;
+    public GameObject rightArmObject;
+    public GameObject leftLegObject;
+    public GameObject rightLegObject;
+
+    private GameObject object1;
+    private GameObject object2;
+
+    [Header("Body Parts Animator")]
     public Animator headAnimator;
     public Animator leftArmAnimator;
     public Animator rightArmAnimator;
@@ -65,6 +77,16 @@ public class DollAttackManager : MonoBehaviour
 
     public SoulMovement soulMovement;
     public bool attacksPausedForCPR = false;
+
+    private Animator animator1;
+    private Animator animator2;
+
+    private Animator selectedAnimator1;
+    private Animator selectedAnimator2;
+
+    public float hitDuration = 1f;
+    public float shakePosIntensity;
+    public int shakePosVibration;
 
     void Start()
     {
@@ -178,12 +200,12 @@ public class DollAttackManager : MonoBehaviour
 
         if (attack1 != null)
         {
-            TriggerAttackAnimation(attack1.attackName);
+            SetAnimator(attack1.attackName, ref animator1, ref object1);
         }
 
         if (attack2 != null)
         {
-            TriggerAttackAnimation(attack2.attackName);
+            SetAnimator(attack2.attackName, ref animator2, ref object2);
         }
 
         StartCoroutine(playerAttackManager.AttackAnimation());
@@ -255,35 +277,82 @@ public class DollAttackManager : MonoBehaviour
         }
     }
 
-    void TriggerAttackAnimation(string attackName)
+    void SetAnimator(string attackName, ref Animator animator, ref GameObject selectedObject)
     {
+        object1 = null;
+        object2 = null;
+
         switch (attackName)
         {
             case "Head":
-                if (headAnimator != null)
-                    headAnimator.SetTrigger("Attack");
+                if (headAnimator != null) animator = headAnimator;
+                selectedObject = headObject;
+                TriggerAttackAnimation();
                 break;
 
             case "LeftArm":
-                if (leftArmAnimator != null)
-                    leftArmAnimator.SetTrigger("Attack");
+                if (leftArmAnimator != null) animator = leftArmAnimator;
+                TriggerAttackAnimation();
+                selectedObject = leftArmObject;
                 break;
 
             case "RightArm":
-                if (rightArmAnimator != null)
-                    rightArmAnimator.SetTrigger("Attack");
+                if (rightArmAnimator != null) animator = rightArmAnimator;
+                TriggerAttackAnimation();
+                selectedObject = rightArmObject;
                 break;
 
             case "LeftLeg":
-                if (leftLegAnimator != null)
-                    leftLegAnimator.SetTrigger("Attack");
+                if (leftLegAnimator != null) animator = leftLegAnimator;
+                TriggerAttackAnimation();
+                selectedObject = leftLegObject;
                 break;
 
             case "RightLeg":
-                if (rightLegAnimator != null)
-                    rightLegAnimator.SetTrigger("Attack");
+                if (rightLegAnimator != null) animator = rightLegAnimator;
+                TriggerAttackAnimation();
+                selectedObject = leftLegObject;
                 break;
         }
+    }
+
+    void TriggerAttackAnimation()
+    {
+        if (animator1 != null) animator1.SetTrigger("Attack");
+        if (animator2 != null) animator2.SetTrigger("Attack");
+    }
+
+    public void TriggerAnimationEnd()
+    {
+        if (animator1 != null) animator1.SetTrigger("Hit");
+        if (animator2 != null) animator2.SetTrigger("Hit");
+
+        animator1 = null;
+        animator2 = null;
+
+        if (object1 != null)
+        {
+            Vector3 objectPos = object1.transform.position;
+            StartCoroutine(DelayBeforeOGPos(object1, objectPos));
+            Sequence hit = DOTween.Sequence();
+            hit.Append(object1.transform.DOShakePosition(hitDuration, shakePosIntensity, shakePosVibration, 90f, false, false));
+            hit.Play();
+        }
+        if (object2 != null)
+        {
+            Vector3 objectPos = object2.transform.position;
+            StartCoroutine(DelayBeforeOGPos(object2, objectPos));
+            Sequence hit = DOTween.Sequence();
+            hit.Append(object2.transform.DOShakePosition(hitDuration, shakePosIntensity, shakePosVibration, 90f, false, false));
+            hit.Play();
+        }
+    }
+
+    private IEnumerator DelayBeforeOGPos(GameObject selectedObject, Vector3 objectPos)
+    {
+        yield return new WaitForSeconds(hitDuration + 0.1f);
+
+        selectedObject.transform.position = objectPos;
     }
 
     public void EndCurrentAttack()
@@ -324,6 +393,9 @@ public class DollAttackManager : MonoBehaviour
         {
             soulMovement.SoulRandomMovement();
         }
+
+        if (animator1 != null) animator1 = null;
+        if (animator2 != null) animator2 = null;
 
         float nextWait = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
         currentAttackCoroutine = StartCoroutine(AttackSequence(nextWait));

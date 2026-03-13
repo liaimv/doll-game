@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class CPR : MonoBehaviour
 {
-    public float cprThreshold = 20f;
+    public float cprThreshold = 4f;
     public int pressesNeeded = 3;
     public float healAmount = 20f;
 
@@ -55,7 +55,7 @@ public class CPR : MonoBehaviour
     public void StartCPR()
     {
         if (dollAttackManager == null || dollAttackManager.cprUI == null) return;
-        if (Data.dollHealth <= 0) return;
+        //if (Data.dollHealth <= 0) return;
 
         cprActive = true;
         cprFrozen = false;

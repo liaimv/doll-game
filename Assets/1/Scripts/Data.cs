@@ -25,4 +25,8 @@ public class Data
     public static bool isStage1 = true;
     public static bool isStage2 = false;
     public static bool isStage3 = false;
+
+    public static bool isHitSoft = false;
+    public static bool isHitMedium = false;
+    public static bool isHitStrong = false;
 }
