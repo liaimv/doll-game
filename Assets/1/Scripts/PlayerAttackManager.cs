@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerAttackManager : MonoBehaviour
 {
     public int dollAttackAmount = 5;
-    public int playerAttackAmount = 10;
     public bool isBeingAttacked = false;
     public bool isAttackedFalse = false;
 
@@ -30,8 +29,16 @@ public class PlayerAttackManager : MonoBehaviour
 
     public SoulLivesManager soulLivesManager;
 
+    private int playerAttackAmount;
+    private int playerAttackAmountSoft = 3;
+    private int playerAttackAmountMedium = 6;
+    private int playerAttackAmountStrong = 9;
+
+    private CPR cpr;
+
     void Start()
     {
+        cpr = GetComponent<CPR>();
         playerHealthManager = GetComponent<PlayerHealthManager>();
         dollHealthManager = GetComponent<DollHealthManager>();
         dollAttackManager = GetComponent<DollAttackManager>();
@@ -40,16 +47,43 @@ public class PlayerAttackManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W)) HandleAttack("Head");
-        else if (Input.GetKeyDown(KeyCode.A)) HandleAttack("LeftArm");
-        else if (Input.GetKeyDown(KeyCode.D)) HandleAttack("RightArm");
-        else if (Input.GetKeyDown(KeyCode.Z)) HandleAttack("LeftLeg");
-        else if (Input.GetKeyDown(KeyCode.X)) HandleAttack("RightLeg");
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.I)) CheckAttackStrength("Head");
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.J)) CheckAttackStrength("LeftArm");
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.L)) CheckAttackStrength("RightArm");
+        if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.M)) CheckAttackStrength("LeftLeg");
+        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.B) || Input.GetKeyDown(KeyCode.Comma)) CheckAttackStrength("RightLeg");
+        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.G) || Input.GetKeyDown(KeyCode.K)) HandleCPR();
+    }
 
-        if (Input.GetKeyDown(KeyCode.S))
+    void CheckAttackStrength(string attackKey)
+    {
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
         {
-            HandleCPR();
+            Data.isHitMedium = false;
+            Data.isHitStrong = false;
+            Data.isHitSoft = true;
+            playerAttackAmount = playerAttackAmountSoft;
         }
+        if (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.B))
+        {
+            Data.isHitSoft = false;
+            Data.isHitStrong = false;
+            Data.isHitMedium = true;
+
+            playerAttackAmount = playerAttackAmountMedium;
+        }
+        if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Comma))
+        {
+            Data.isHitSoft = false;
+            Data.isHitMedium = false;
+            Data.isHitStrong = true;
+
+            playerAttackAmount = playerAttackAmountStrong;
+            //CPR start
+            cpr.StartCPR();
+        }
+
+        HandleAttack(attackKey);
     }
 
     void HandleAttack(string attackKey)
@@ -148,6 +182,7 @@ public class PlayerAttackManager : MonoBehaviour
         {
             if (dollAttackManager.attack1.isGreen)
             {
+                dollAttackManager.TriggerAnimationEnd();
                 DollGotHit();
                 dollAttackManager.attack1Frozen = true;
                 StartCoroutine(DissapearAfterDelay(correctWaitTime));
@@ -210,6 +245,12 @@ public class PlayerAttackManager : MonoBehaviour
         if (cprManager == null) return;
         if (!cprManager.cprActive) return;
         if (cprManager.cprAttack == null) return;
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            cpr.CPRFail();
+            return;
+        }
 
         if (cprManager.cprAttack.isGreen)
         {

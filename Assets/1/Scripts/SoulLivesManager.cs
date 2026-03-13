@@ -42,6 +42,17 @@ public class SoulLivesManager : MonoBehaviour
         }
     }
 
+    public void HitSoulCPR()
+    {
+        if (soulInHitArea)
+        {
+            if (Input.GetKeyDown(KeyCode.G) || Input.GetKeyDown(KeyCode.K))
+            {
+                HitSoulMediumStrong();
+            }
+        }
+    }
+
     public void HitSoul(string attackName)
     {
         Debug.Log("soul check happening");
@@ -75,20 +86,25 @@ public class SoulLivesManager : MonoBehaviour
 
             if (hitAreaPos == currentHitArea.position)
             {
-                if (soulLife3.activeSelf)
-                {
-                    soulLife3.SetActive(false);
-                }
-                else if (soulLife2.activeSelf)
-                {
-                    soulLife2.SetActive(false);
-                }
-                else if (soulLife1.activeSelf)
-                {
-                    soulLife1.SetActive(false);
-                    //friendDeathUIObject.SetActive(true);
-                }
+                if (Data.isHitMedium || Data.isHitStrong) HitSoulMediumStrong();
             }
+        }
+    }
+
+    public void HitSoulMediumStrong()
+    {
+        if (soulLife3.activeSelf)
+        {
+            soulLife3.SetActive(false);
+        }
+        else if (soulLife2.activeSelf)
+        {
+            soulLife2.SetActive(false);
+        }
+        else if (soulLife1.activeSelf)
+        {
+            soulLife1.SetActive(false);
+            friendDeathUIObject.SetActive(true);
         }
     }
 }
