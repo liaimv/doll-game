@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 
 public class PlayerAttackManager : MonoBehaviour
@@ -36,6 +37,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     private CPR cpr;
 
+
     void Start()
     {
         cpr = GetComponent<CPR>();
@@ -43,6 +45,8 @@ public class PlayerAttackManager : MonoBehaviour
         dollHealthManager = GetComponent<DollHealthManager>();
         dollAttackManager = GetComponent<DollAttackManager>();
         cprManager = GetComponent<CPR>();
+      
+
     }
 
     void Update()
@@ -59,10 +63,13 @@ public class PlayerAttackManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
         {
+
+  
             Data.isHitMedium = false;
             Data.isHitStrong = false;
             Data.isHitSoft = true;
             playerAttackAmount = playerAttackAmountSoft;
+
         }
         if (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.B))
         {
@@ -82,6 +89,8 @@ public class PlayerAttackManager : MonoBehaviour
             //CPR start
             cpr.StartCPR();
         }
+
+   
 
         HandleAttack(attackKey);
     }
