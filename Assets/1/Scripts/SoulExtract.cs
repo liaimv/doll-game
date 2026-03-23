@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 
 
@@ -31,6 +31,11 @@ public class SoulExtract : MonoBehaviour
     public float upwardStep = 0.3f;
 
     public DollAttackManager dollAttackManager;
+
+    private bool soulCentered = false;
+    private Vector3 rescueBasePosition;
+    private float currentRise = 0f;
+
     void Start()
     {
         if (rescueText != null)
@@ -72,9 +77,18 @@ public class SoulExtract : MonoBehaviour
         successfulPresses = 0;
         comboHeldLastFrame = false;
 
+        soulCentered = true;
+        currentRise = 0f;
+
         if (soulMovement != null)
         {
             soulMovement.enabled = false;
+        }
+
+        if (soulTransform != null && centerPoint != null)
+        {
+            rescueBasePosition = centerPoint.position;
+            soulTransform.position = rescueBasePosition;
         }
 
         if (rescueText != null)
@@ -93,45 +107,27 @@ public class SoulExtract : MonoBehaviour
 
     void MoveSoulToCenterAndShake()
     {
-        if (soulTransform == null || centerPoint == null) return;
+        if (soulTransform == null || centerPoint == null || !soulCentered) return;
 
-        Vector3 targetPos = centerPoint.position;
+        Vector3 shakeOffset = Random.insideUnitSphere * shakeAmount;
+        shakeOffset.z = 0f;
 
-        // keep current Y so it can rise
-        targetPos.y = soulTransform.position.y;
-
-        soulTransform.position = Vector3.MoveTowards(
-            soulTransform.position,
-            targetPos,
-            moveToCenterSpeed * Time.deltaTime
-                );
-
-        if (Vector3.Distance(soulTransform.position, centerPoint.position) < 0.05f)
-        {
-            Vector3 shakeOffset = Random.insideUnitSphere * shakeAmount;
-            shakeOffset.z = 0f; 
-
-            soulTransform.position = centerPoint.position + shakeOffset;
-        }
+        soulTransform.position = rescueBasePosition + Vector3.up * currentRise + shakeOffset;
     }
 
     void HandleComboInput()
     {
-        bool allHeld =
-            Input.GetKey(KeyCode.X) &&
-            Input.GetKey(KeyCode.Z) &&
-            Input.GetKey(KeyCode.W) &&
-            Input.GetKey(KeyCode.A) &&
-            Input.GetKey(KeyCode.D);
+        bool pressedAny =
+            Input.GetKeyDown(KeyCode.W) ||
+            Input.GetKeyDown(KeyCode.A) ||
+            Input.GetKeyDown(KeyCode.D) ||
+            Input.GetKeyDown(KeyCode.Z) ||
+            Input.GetKeyDown(KeyCode.X);
 
-        // Count once when the full combo becomes newly pressed
-        if (allHeld && !comboHeldLastFrame)
+        if (pressedAny)
         {
             successfulPresses++;
-            if (soulTransform != null)
-            {
-                soulTransform.position += Vector3.up * upwardStep;
-            }
+            currentRise += upwardStep;
 
             Debug.Log("SOUL SAVE HIT: " + successfulPresses + "/" + pressesNeeded);
 
@@ -140,9 +136,6 @@ public class SoulExtract : MonoBehaviour
                 SaveSoul();
             }
         }
-
-
-        comboHeldLastFrame = allHeld;
     }
 
     void UpdateRescueUI()

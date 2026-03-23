@@ -36,7 +36,7 @@ public class PlayerAttackManager : MonoBehaviour
     private int playerAttackAmountStrong = 9;
 
     private CPR cpr;
-
+    private SoulExtract soulExtract;
 
     void Start()
     {
@@ -45,12 +45,14 @@ public class PlayerAttackManager : MonoBehaviour
         dollHealthManager = GetComponent<DollHealthManager>();
         dollAttackManager = GetComponent<DollAttackManager>();
         cprManager = GetComponent<CPR>();
-      
+        soulExtract = GetComponent<SoulExtract>();
+
 
     }
 
     void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.I)) CheckAttackStrength("Head");
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.J)) CheckAttackStrength("LeftArm");
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.L)) CheckAttackStrength("RightArm");
@@ -362,6 +364,12 @@ public class PlayerAttackManager : MonoBehaviour
     {
         yield return new WaitForSeconds(attackAnimationDuration);
 
+        if (soulExtract != null && soulExtract.rescueActive)
+            yield break;
+
+        if (dollAttackManager != null && dollAttackManager.attacksPausedForCPR)
+            yield break;
+
         if (isAttackedFalse)
         {
             Debug.Log("player losing health");
@@ -389,4 +397,5 @@ public class PlayerAttackManager : MonoBehaviour
         lastDollDamageTime = Time.time;
         dollHealthManager.loseHealth(dollAttackAmount);
     }
+
 }

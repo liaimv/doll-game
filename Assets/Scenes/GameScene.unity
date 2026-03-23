@@ -5000,7 +5000,7 @@ MonoBehaviour:
   dollTrulyDead: 0
   deathUI: {fileID: 354814593}
   rescueUI: {fileID: 1626669132}
-  upwardStep: 100
+  upwardStep: 35
   dollAttackManager: {fileID: 1070773569}
 --- !u!1 &1087946368
 GameObject:

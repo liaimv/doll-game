@@ -477,13 +477,7 @@ public class DollAttackManager : MonoBehaviour
         if (rightArmAttackUI != null) rightArmAttackUI.SetActive(false);
         if (leftLegAttackUI != null) leftLegAttackUI.SetActive(false);
         if (rightLegAttackUI != null) rightLegAttackUI.SetActive(false);
-
-        attack1 = null;
-        attack2 = null;
-        attack1Frozen = false;
-        attack2Frozen = false;
     }
-
     public void ResumeAttacksAfterCPR()
     {
         if (Data.dollHealth <= 0) return;
