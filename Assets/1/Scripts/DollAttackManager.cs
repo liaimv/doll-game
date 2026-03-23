@@ -88,6 +88,10 @@ public class DollAttackManager : MonoBehaviour
     public float shakePosIntensity;
     public int shakePosVibration;
 
+    public Coroutine rescuePulseCoroutine;
+    public float rescuePulseSpeed = 1.8f;
+    public float rescuePulseScaleMin = 0.9f;
+    public float rescuePulseScaleMax = 1.15f;
     void Start()
     {
         playerAttackManager = GetComponent<PlayerAttackManager>();
@@ -473,13 +477,7 @@ public class DollAttackManager : MonoBehaviour
         if (rightArmAttackUI != null) rightArmAttackUI.SetActive(false);
         if (leftLegAttackUI != null) leftLegAttackUI.SetActive(false);
         if (rightLegAttackUI != null) rightLegAttackUI.SetActive(false);
-
-        attack1 = null;
-        attack2 = null;
-        attack1Frozen = false;
-        attack2Frozen = false;
     }
-
     public void ResumeAttacksAfterCPR()
     {
         if (Data.dollHealth <= 0) return;
@@ -489,7 +487,116 @@ public class DollAttackManager : MonoBehaviour
         float nextWait = Random.Range(attackTimeRangeMin, attackTimeRangeMax);
         currentAttackCoroutine = StartCoroutine(AttackSequence(nextWait));
     }
+
+    public void StartRescuePulse()
+    {
+        StopRescuePulse();
+
+        if (headAttackUI != null) headAttackUI.SetActive(true);
+        if (leftArmAttackUI != null) leftArmAttackUI.SetActive(true);
+        if (rightArmAttackUI != null) rightArmAttackUI.SetActive(true);
+        if (leftLegAttackUI != null) leftLegAttackUI.SetActive(true);
+        if (rightLegAttackUI != null) rightLegAttackUI.SetActive(true);
+
+        rescuePulseCoroutine = StartCoroutine(RescuePulseRoutine());
+    }
+
+    public void StopRescuePulse()
+    {
+        if (rescuePulseCoroutine != null)
+        {
+            StopCoroutine(rescuePulseCoroutine);
+            rescuePulseCoroutine = null;
+        }
+
+        ResetPulseUI(headAttackUI);
+        ResetPulseUI(leftArmAttackUI);
+        ResetPulseUI(rightArmAttackUI);
+        ResetPulseUI(leftLegAttackUI);
+        ResetPulseUI(rightLegAttackUI);
+
+        if (headAttackUI != null) headAttackUI.SetActive(false);
+        if (leftArmAttackUI != null) leftArmAttackUI.SetActive(false);
+        if (rightArmAttackUI != null) rightArmAttackUI.SetActive(false);
+        if (leftLegAttackUI != null) leftLegAttackUI.SetActive(false);
+        if (rightLegAttackUI != null) rightLegAttackUI.SetActive(false);
+    }
+
+    private IEnumerator RescuePulseRoutine()
+    {
+        while (true)
+        {
+            float pulse = Mathf.PingPong(Time.time * rescuePulseSpeed, 1f);
+            float scale = Mathf.Lerp(rescuePulseScaleMin, rescuePulseScaleMax, pulse);
+
+            PulseSingleUI(headAttackUI, scale);
+            PulseSingleUI(leftArmAttackUI, scale);
+            PulseSingleUI(rightArmAttackUI, scale);
+            PulseSingleUI(leftLegAttackUI, scale);
+            PulseSingleUI(rightLegAttackUI, scale);
+
+            yield return null;
+        }
+    }
+
+    private void PulseSingleUI(GameObject attackUI, float scale)
+    {
+        if (attackUI == null) return;
+
+        Transform ring = attackUI.transform.GetChild(0);
+        Transform circle = attackUI.transform.GetChild(1);
+
+        ring.localScale = new Vector3(scale, scale, scale);
+        circle.localScale = new Vector3(scale, scale, scale);
+
+        Image ringImage = ring.GetComponent<Image>();
+        Image circleImage = circle.GetComponent<Image>();
+
+        if (ringImage != null)
+        {
+            Color r = Color.white;
+            r.a = Mathf.Lerp(0.45f, 1f, Mathf.PingPong(Time.time * rescuePulseSpeed, 1f));
+            ringImage.color = r;
+        }
+
+        if (circleImage != null)
+        {
+            Color c = Color.white;
+            c.a = Mathf.Lerp(0.25f, 0.8f, Mathf.PingPong(Time.time * rescuePulseSpeed, 1f));
+            circleImage.color = c;
+        }
+    }
+
+    private void ResetPulseUI(GameObject attackUI)
+    {
+        if (attackUI == null) return;
+
+        Transform ring = attackUI.transform.GetChild(0);
+        Transform circle = attackUI.transform.GetChild(1);
+
+        ring.localScale = Vector3.one;
+        circle.localScale = Vector3.one;
+
+        Image ringImage = ring.GetComponent<Image>();
+        Image circleImage = circle.GetComponent<Image>();
+
+        if (ringImage != null)
+        {
+            Color r = Color.white;
+            r.a = 1f;
+            ringImage.color = r;
+        }
+
+        if (circleImage != null)
+        {
+            Color c = Color.white;
+            c.a = 1f;
+            circleImage.color = c;
+        }
+    }
 }
+
+
 
 public class ActiveAttack
 {
