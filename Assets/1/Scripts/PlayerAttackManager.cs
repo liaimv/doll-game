@@ -149,6 +149,7 @@ public class PlayerAttackManager : MonoBehaviour
                 {
                     if (comboAttack.isGreen)
                     {
+                        dollAttackManager.TriggerAnimationEnd();
                         comboAttack.wasHit = true;
                         Debug.Log(attackKey + " : hit correctly");
 
@@ -211,6 +212,7 @@ public class PlayerAttackManager : MonoBehaviour
         {
             if (dollAttackManager.attack2.isGreen)
             {
+                dollAttackManager.TriggerAnimationEnd();
                 DollGotHit();
                 dollAttackManager.attack2Frozen = true;
                 StartCoroutine(DissapearAfterDelay(correctWaitTime));
