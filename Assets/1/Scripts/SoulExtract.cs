@@ -28,7 +28,9 @@ public class SoulExtract : MonoBehaviour
     public GameObject deathUI;
 
     public GameObject rescueUI;
+    public float upwardStep = 0.3f;
 
+    public DollAttackManager dollAttackManager;
     void Start()
     {
         if (rescueText != null)
@@ -81,17 +83,28 @@ public class SoulExtract : MonoBehaviour
         }
 
         Debug.Log("rescuera start");
+
+        if (dollAttackManager != null)
+        {
+            dollAttackManager.StopAttacksForCPR();
+            dollAttackManager.StartRescuePulse();
+        }
     }
 
     void MoveSoulToCenterAndShake()
     {
         if (soulTransform == null || centerPoint == null) return;
 
+        Vector3 targetPos = centerPoint.position;
+
+        // keep current Y so it can rise
+        targetPos.y = soulTransform.position.y;
+
         soulTransform.position = Vector3.MoveTowards(
             soulTransform.position,
-            centerPoint.position,
+            targetPos,
             moveToCenterSpeed * Time.deltaTime
-        );
+                );
 
         if (Vector3.Distance(soulTransform.position, centerPoint.position) < 0.05f)
         {
@@ -115,6 +128,11 @@ public class SoulExtract : MonoBehaviour
         if (allHeld && !comboHeldLastFrame)
         {
             successfulPresses++;
+            if (soulTransform != null)
+            {
+                soulTransform.position += Vector3.up * upwardStep;
+            }
+
             Debug.Log("SOUL SAVE HIT: " + successfulPresses + "/" + pressesNeeded);
 
             if (successfulPresses >= pressesNeeded)
@@ -122,6 +140,7 @@ public class SoulExtract : MonoBehaviour
                 SaveSoul();
             }
         }
+
 
         comboHeldLastFrame = allHeld;
     }
@@ -179,6 +198,11 @@ public class SoulExtract : MonoBehaviour
         deathUI.SetActive(true);
 
         Debug.Log("DOLL TRULY DEAD");
+
+        if (dollAttackManager != null)
+        {
+            dollAttackManager.StopRescuePulse();
+        }
     }
 
     public void ResetCombo()

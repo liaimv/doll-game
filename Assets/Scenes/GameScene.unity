@@ -4836,7 +4836,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ebe5274d4559664c8f88ac9e26ae6b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dollAttackAmount: 10
+  dollAttackAmount: 15
   isBeingAttacked: 0
   isAttackedFalse: 0
   penaltyWaitTime: 1.5
@@ -4924,6 +4924,9 @@ MonoBehaviour:
   hitDuration: 1
   shakePosIntensity: 0.001
   shakePosVibration: 50
+  rescuePulseSpeed: 1.8
+  rescuePulseScaleMin: 0.9
+  rescuePulseScaleMax: 1.15
 --- !u!114 &1070773570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4997,6 +5000,8 @@ MonoBehaviour:
   dollTrulyDead: 0
   deathUI: {fileID: 354814593}
   rescueUI: {fileID: 1626669132}
+  upwardStep: 100
+  dollAttackManager: {fileID: 1070773569}
 --- !u!1 &1087946368
 GameObject:
   m_ObjectHideFlags: 0
