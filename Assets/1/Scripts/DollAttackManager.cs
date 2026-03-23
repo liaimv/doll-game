@@ -16,8 +16,10 @@ public class DollAttackManager : MonoBehaviour
     public GameObject leftLegObject;
     public GameObject rightLegObject;
 
-    private GameObject object1;
-    private GameObject object2;
+    //private GameObject object1;
+    //private GameObject object2;
+
+    private List<GameObject> activeObjects = new List<GameObject>();
 
     [Header("Body Parts Animator")]
     public Animator headAnimator;
@@ -189,6 +191,8 @@ public class DollAttackManager : MonoBehaviour
 
     private IEnumerator StartAttack()
     {
+        activeObjects.Clear();
+
         float isSoulFollow = Random.Range(0f, 2f);
         Debug.Log(isSoulFollow);
 
@@ -204,14 +208,15 @@ public class DollAttackManager : MonoBehaviour
 
         if (attack1 != null)
         {
-            SetAnimator(attack1.attackName, ref animator1, ref object1);
+            SetAnimator(attack1.attackName, ref animator1);
         }
 
         if (attack2 != null)
         {
-            SetAnimator(attack2.attackName, ref animator2, ref object2);
+            SetAnimator(attack2.attackName, ref animator2);
         }
 
+        TriggerAttackAnimation();
         StartCoroutine(playerAttackManager.AttackAnimation());
 
         while (isAttacking)
@@ -281,42 +286,44 @@ public class DollAttackManager : MonoBehaviour
         }
     }
 
-    void SetAnimator(string attackName, ref Animator animator, ref GameObject selectedObject)
+    void SetAnimator(string attackName, ref Animator animator)
     {
-        object1 = null;
-        object2 = null;
+        //object1 = null;
+        //object2 = null;
+
+        GameObject selectedObject = null;
 
         switch (attackName)
         {
             case "Head":
                 if (headAnimator != null) animator = headAnimator;
                 selectedObject = headObject;
-                TriggerAttackAnimation();
                 break;
 
             case "LeftArm":
                 if (leftArmAnimator != null) animator = leftArmAnimator;
-                TriggerAttackAnimation();
                 selectedObject = leftArmObject;
                 break;
 
             case "RightArm":
                 if (rightArmAnimator != null) animator = rightArmAnimator;
-                TriggerAttackAnimation();
                 selectedObject = rightArmObject;
                 break;
 
             case "LeftLeg":
                 if (leftLegAnimator != null) animator = leftLegAnimator;
-                TriggerAttackAnimation();
                 selectedObject = leftLegObject;
                 break;
 
             case "RightLeg":
                 if (rightLegAnimator != null) animator = rightLegAnimator;
-                TriggerAttackAnimation();
-                selectedObject = leftLegObject;
+                selectedObject = rightLegObject;
                 break;
+        }
+
+        if (selectedObject != null)
+        {
+            activeObjects.Add(selectedObject);
         }
     }
 
@@ -328,27 +335,24 @@ public class DollAttackManager : MonoBehaviour
 
     public void TriggerAnimationEnd()
     {
+        Debug.Log("TriggerAnimationEnd called. Active objects: " + activeObjects.Count);
+
         if (animator1 != null) animator1.SetTrigger("Hit");
         if (animator2 != null) animator2.SetTrigger("Hit");
 
         animator1 = null;
         animator2 = null;
 
-        if (object1 != null)
+        foreach (GameObject obj in activeObjects)
         {
-            Vector3 objectPos = object1.transform.position;
-            StartCoroutine(DelayBeforeOGPos(object1, objectPos));
-            Sequence hit = DOTween.Sequence();
-            hit.Append(object1.transform.DOShakePosition(hitDuration, shakePosIntensity, shakePosVibration, 90f, false, false));
-            hit.Play();
-        }
-        if (object2 != null)
-        {
-            Vector3 objectPos = object2.transform.position;
-            StartCoroutine(DelayBeforeOGPos(object2, objectPos));
-            Sequence hit = DOTween.Sequence();
-            hit.Append(object2.transform.DOShakePosition(hitDuration, shakePosIntensity, shakePosVibration, 90f, false, false));
-            hit.Play();
+            Debug.Log("Shaking: " + obj.name);
+
+            if (obj == null) continue;
+
+            Vector3 objectPos = obj.transform.position;
+            StartCoroutine(DelayBeforeOGPos(obj, objectPos));
+
+            obj.transform.DOShakePosition(hitDuration, shakePosIntensity, shakePosVibration, 90f, false, false);
         }
     }
 
@@ -595,8 +599,6 @@ public class DollAttackManager : MonoBehaviour
         }
     }
 }
-
-
 
 public class ActiveAttack
 {
