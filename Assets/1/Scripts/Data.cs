@@ -19,8 +19,8 @@ public class Data
     public static float soulFastSpeed = 9f;
 
     public static float animationSlowSpeed = 1f;
-    public static float animationMediumSpeed = 2f;
-    public static float animationFastSpeed = 3f;
+    public static float animationMediumSpeed = 1.5f;
+    public static float animationFastSpeed = 2f;
 
     public static bool isStage1 = true;
     public static bool isStage2 = false;
