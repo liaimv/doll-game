@@ -37,6 +37,12 @@ public class DollAttackManager : MonoBehaviour
     public GameObject rightLegAttackUI;
     public GameObject cprUI;
 
+    public GameObject headExtractUI;
+    public GameObject leftArmExtractUI;
+    public GameObject rightArmExtractUI;
+    public GameObject leftLegExtractUI;
+    public GameObject rightLegExtractUI;
+
     private List<GameObject> attackUIList;
 
     public float ringSizeMin = 0.9f;
@@ -496,11 +502,11 @@ public class DollAttackManager : MonoBehaviour
     {
         StopRescuePulse();
 
-        if (headAttackUI != null) headAttackUI.SetActive(true);
-        if (leftArmAttackUI != null) leftArmAttackUI.SetActive(true);
-        if (rightArmAttackUI != null) rightArmAttackUI.SetActive(true);
-        if (leftLegAttackUI != null) leftLegAttackUI.SetActive(true);
-        if (rightLegAttackUI != null) rightLegAttackUI.SetActive(true);
+        if (headExtractUI != null) headExtractUI.SetActive(true);
+        if (leftArmExtractUI != null) leftArmExtractUI.SetActive(true);
+        if (rightArmExtractUI != null) rightArmExtractUI.SetActive(true);
+        if (leftLegExtractUI != null) leftLegExtractUI.SetActive(true);
+        if (rightLegExtractUI != null) rightLegExtractUI.SetActive(true);
 
         rescuePulseCoroutine = StartCoroutine(RescuePulseRoutine());
     }
@@ -513,17 +519,17 @@ public class DollAttackManager : MonoBehaviour
             rescuePulseCoroutine = null;
         }
 
-        ResetPulseUI(headAttackUI);
-        ResetPulseUI(leftArmAttackUI);
-        ResetPulseUI(rightArmAttackUI);
-        ResetPulseUI(leftLegAttackUI);
-        ResetPulseUI(rightLegAttackUI);
+        ResetPulseUI(headExtractUI);
+        ResetPulseUI(leftArmExtractUI);
+        ResetPulseUI(rightArmExtractUI);
+        ResetPulseUI(leftLegExtractUI);
+        ResetPulseUI(rightLegExtractUI);
 
-        if (headAttackUI != null) headAttackUI.SetActive(false);
-        if (leftArmAttackUI != null) leftArmAttackUI.SetActive(false);
-        if (rightArmAttackUI != null) rightArmAttackUI.SetActive(false);
-        if (leftLegAttackUI != null) leftLegAttackUI.SetActive(false);
-        if (rightLegAttackUI != null) rightLegAttackUI.SetActive(false);
+        if (headExtractUI != null) headExtractUI.SetActive(false);
+        if (leftArmExtractUI != null) leftArmExtractUI.SetActive(false);
+        if (rightArmExtractUI != null) rightArmExtractUI.SetActive(false);
+        if (leftLegExtractUI != null) leftLegExtractUI.SetActive(false);
+        if (rightLegExtractUI != null) rightLegExtractUI.SetActive(false);
     }
 
     private IEnumerator RescuePulseRoutine()
@@ -533,11 +539,11 @@ public class DollAttackManager : MonoBehaviour
             float pulse = Mathf.PingPong(Time.time * rescuePulseSpeed, 1f);
             float scale = Mathf.Lerp(rescuePulseScaleMin, rescuePulseScaleMax, pulse);
 
-            PulseSingleUI(headAttackUI, scale);
-            PulseSingleUI(leftArmAttackUI, scale);
-            PulseSingleUI(rightArmAttackUI, scale);
-            PulseSingleUI(leftLegAttackUI, scale);
-            PulseSingleUI(rightLegAttackUI, scale);
+            PulseSingleUI(headExtractUI, scale);
+            PulseSingleUI(leftArmExtractUI, scale);
+            PulseSingleUI(rightArmExtractUI, scale);
+            PulseSingleUI(leftLegExtractUI, scale);
+            PulseSingleUI(rightLegExtractUI, scale);
 
             yield return null;
         }

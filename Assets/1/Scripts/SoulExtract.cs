@@ -67,7 +67,7 @@ public class SoulExtract : MonoBehaviour
 
             MoveSoulToCenterAndShake();
             HandleComboInput();
-            UpdateRescueUI();
+            //UpdateRescueUI();
         }
     }
 
@@ -117,14 +117,34 @@ public class SoulExtract : MonoBehaviour
 
     void HandleComboInput()
     {
-        bool pressedAny =
-            Input.GetKeyDown(KeyCode.W) ||
-            Input.GetKeyDown(KeyCode.A) ||
-            Input.GetKeyDown(KeyCode.D) ||
-            Input.GetKeyDown(KeyCode.Z) ||
-            Input.GetKeyDown(KeyCode.X);
+        bool head =
+        Input.GetKey(KeyCode.W) ||
+        Input.GetKey(KeyCode.T) ||
+        Input.GetKey(KeyCode.I);
 
-        if (pressedAny)
+        bool leftArm =
+            Input.GetKey(KeyCode.A) ||
+            Input.GetKey(KeyCode.F) ||
+            Input.GetKey(KeyCode.J);
+
+        bool rightArm =
+            Input.GetKey(KeyCode.D) ||
+            Input.GetKey(KeyCode.H) ||
+            Input.GetKey(KeyCode.L);
+
+        bool leftLeg =
+            Input.GetKey(KeyCode.Z) ||
+            Input.GetKey(KeyCode.V) ||
+            Input.GetKey(KeyCode.M);
+
+        bool rightLeg =
+            Input.GetKey(KeyCode.X) ||
+            Input.GetKey(KeyCode.B) ||
+            Input.GetKey(KeyCode.Comma);
+
+        bool allPressed = head && leftArm && rightArm && leftLeg && rightLeg;
+
+        if (allPressed && !comboHeldLastFrame)
         {
             successfulPresses++;
             currentRise += upwardStep;
@@ -136,6 +156,28 @@ public class SoulExtract : MonoBehaviour
                 SaveSoul();
             }
         }
+
+        comboHeldLastFrame = allPressed;
+
+        //bool pressedAny =
+        //    Input.GetKeyDown(KeyCode.W) ||
+        //    Input.GetKeyDown(KeyCode.A) ||
+        //    Input.GetKeyDown(KeyCode.D) ||
+        //    Input.GetKeyDown(KeyCode.Z) ||
+        //    Input.GetKeyDown(KeyCode.X);
+
+        //if (pressedAny)
+        //{
+        //    successfulPresses++;
+        //    currentRise += upwardStep;
+
+        //    Debug.Log("SOUL SAVE HIT: " + successfulPresses + "/" + pressesNeeded);
+
+        //    if (successfulPresses >= pressesNeeded)
+        //    {
+        //        SaveSoul();
+        //    }
+        //}
     }
 
     void UpdateRescueUI()
