@@ -102,6 +102,32 @@ public class DollAttackManager : MonoBehaviour
     public float rescuePulseScaleMax = 1.15f;
     void Start()
     {
+        //playerAttackManager = GetComponent<PlayerAttackManager>();
+
+        //headAttackUI.SetActive(false);
+        ////bodyAttackUI.SetActive(false);
+        //leftArmAttackUI.SetActive(false);
+        //rightArmAttackUI.SetActive(false);
+        //leftLegAttackUI.SetActive(false);
+        //rightLegAttackUI.SetActive(false);
+
+        //cprUI.SetActive(false);
+
+        //attackUIList = new List<GameObject>()
+        //{
+        //    headAttackUI,
+        //    //bodyAttackUI,
+        //    leftArmAttackUI,
+        //    rightArmAttackUI,
+        //    leftLegAttackUI,
+        //    rightLegAttackUI
+        //};
+
+        //currentAttackCoroutine = StartCoroutine(AttackSequence(attackStartTime));
+    }
+
+    public void GameStart()
+    {
         playerAttackManager = GetComponent<PlayerAttackManager>();
 
         headAttackUI.SetActive(false);
