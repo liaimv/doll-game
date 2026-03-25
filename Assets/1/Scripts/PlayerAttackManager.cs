@@ -28,19 +28,19 @@ public class PlayerAttackManager : MonoBehaviour
     private DollAttackManager dollAttackManager;
     private CPR cprManager;
 
-    private float dollDamageWindow = 0.2f;
+    private float dollDamageWindow = 0.5f;
     private float lastDollDamageTime = -1f;
 
     private bool comboActive = false;       
     private bool comboFailed = false;     
     private float comboStartTime = 0f;      
-    public float comboWindow = 0.2f;    
+    public float comboWindow = 0.5f;    
     private List<ActiveAttack> currentCombo = new List<ActiveAttack>();
 
     public SoulLivesManager soulLivesManager;
 
     private int playerAttackAmount = 15;
-    private int dollAttackAmountSoft = 45;
+    private int dollAttackAmountSoft = 6;
     private int dollAttackAmountMedium = 9;
     private int dollAttackAmountStrong = 12;
 
