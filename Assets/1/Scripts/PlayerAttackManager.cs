@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class PlayerAttackManager : MonoBehaviour
 {
+    ArduinoInput ai;
+
+    int threshold = 50;
+    bool headPressedLast;
+    bool leftArmPressedLast;
+    bool rightArmPressedLast;
+    bool leftLegPressedLast;
+    bool rightLegPressedLast;
+    bool bodyPressedLast;
     private int dollAttackAmount = 5;
     public bool isBeingAttacked = false;
     public bool isAttackedFalse = false;
@@ -40,6 +49,7 @@ public class PlayerAttackManager : MonoBehaviour
 
     void Start()
     {
+        ai = GetComponent<ArduinoInput>();
         cpr = GetComponent<CPR>();
         playerHealthManager = GetComponent<PlayerHealthManager>();
         dollHealthManager = GetComponent<DollHealthManager>();
@@ -51,53 +61,67 @@ public class PlayerAttackManager : MonoBehaviour
     }
 
     void Update()
-    {
-        if (soulExtract != null && soulExtract.rescueActive)
-            return;
+{
+    bool head = ai.head > threshold;
+    bool leftArm = ai.leftArm > threshold;
+    bool rightArm = ai.rightArm > threshold;
+    bool leftLeg = ai.leftLeg > threshold;
+    bool rightLeg = ai.rightLeg > threshold;
+    bool body = ai.body > threshold;
 
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.I)) CheckAttackStrength("Head");
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.J)) CheckAttackStrength("LeftArm");
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.L)) CheckAttackStrength("RightArm");
-        if (Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.M)) CheckAttackStrength("LeftLeg");
-        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.B) || Input.GetKeyDown(KeyCode.Comma)) CheckAttackStrength("RightLeg");
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.G) || Input.GetKeyDown(KeyCode.K)) HandleCPR();
+    if (head && !headPressedLast) CheckAttackStrength("Head");
+    if (leftArm && !leftArmPressedLast) CheckAttackStrength("LeftArm");
+    if (rightArm && !rightArmPressedLast) CheckAttackStrength("RightArm");
+    if (leftLeg && !leftLegPressedLast) CheckAttackStrength("LeftLeg");
+    if (rightLeg && !rightLegPressedLast) CheckAttackStrength("RightLeg");
+
+    if (body && !bodyPressedLast) HandleCPR();
+
+    headPressedLast = head;
+    leftArmPressedLast = leftArm;
+    rightArmPressedLast = rightArm;
+    leftLegPressedLast = leftLeg;
+    rightLegPressedLast = rightLeg;
+    bodyPressedLast = body;
+}
+
+void CheckAttackStrength(string attackKey)
+{
+    int pressure = 0;
+
+    switch (attackKey)
+    {
+        case "Head": pressure = ai.head; break;
+        case "LeftArm": pressure = ai.leftArm; break;
+        case "RightArm": pressure = ai.rightArm; break;
+        case "LeftLeg": pressure = ai.leftLeg; break;
+        case "RightLeg": pressure = ai.rightLeg; break;
     }
 
-    void CheckAttackStrength(string attackKey)
+    Data.isHitSoft = false;
+    Data.isHitMedium = false;
+    Data.isHitStrong = false;
+
+    if (pressure < 300)
     {
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.X))
-        {
-
-  
-            Data.isHitMedium = false;
-            Data.isHitStrong = false;
-            Data.isHitSoft = true;
-            dollAttackAmount = dollAttackAmountSoft;
-
-        }
-        if (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.B))
-        {
-            Data.isHitSoft = false;
-            Data.isHitStrong = false;
-            Data.isHitMedium = true;
-
-            dollAttackAmount = dollAttackAmountMedium;
-        }
-        if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Comma))
-        {
-            Data.isHitSoft = false;
-            Data.isHitMedium = false;
-            Data.isHitStrong = true;
-
-            dollAttackAmount = dollAttackAmountStrong;
-            //CPR start
-            cpr.StartCPR();
-        }
-
-   
-
-        HandleAttack(attackKey);
+        Data.isHitSoft = true;
+        playerAttackAmount = playerAttackAmountSoft;
     }
+    else if (pressure < 700)
+    {
+        Data.isHitMedium = true;
+        playerAttackAmount = playerAttackAmountMedium;
+    }
+    else
+    {
+        Data.isHitStrong = true;
+        playerAttackAmount = playerAttackAmountStrong;
+
+        cpr.StartCPR();
+    }
+
+    HandleAttack(attackKey);
+}
 
     void HandleAttack(string attackKey)
     {

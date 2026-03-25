@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class SoulLivesManager : MonoBehaviour
 {
+    ArduinoInput ai;
+    int threshold = 50;
     public GameObject soulLivesObject;
     public GameObject friendDeathUIObject;
 
@@ -17,6 +19,7 @@ public class SoulLivesManager : MonoBehaviour
 
     void Start()
     {
+        ai = GetComponent<ArduinoInput>();
         if (friendDeathUIObject != null) friendDeathUIObject.SetActive(false);
 
         soulLife1 = soulLivesObject.transform.GetChild(0).gameObject;

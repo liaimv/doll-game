@@ -4,6 +4,8 @@ using TMPro;
 
 public class SoulExtract : MonoBehaviour
 {
+    ArduinoInput ai;
+    int threshold = 50;
     public float rescueThreshold = 10f;
     public int pressesNeeded = 8;
     public float healAmount = 20f;
@@ -41,6 +43,7 @@ public class SoulExtract : MonoBehaviour
 
     void Start()
     {
+        ai = GetComponent<ArduinoInput>();
         if (rescueText != null)
         {
             rescueText.gameObject.SetActive(false);
@@ -118,70 +121,31 @@ public class SoulExtract : MonoBehaviour
         soulTransform.position = rescueBasePosition + Vector3.up * currentRise + shakeOffset;
     }
 
-    void HandleComboInput()
+void HandleComboInput()
+{
+    bool head = ai.head > threshold;
+    bool leftArm = ai.leftArm > threshold;
+    bool rightArm = ai.rightArm > threshold;
+    bool leftLeg = ai.leftLeg > threshold;
+    bool rightLeg = ai.rightLeg > threshold;
+
+    bool allPressed = head && leftArm && rightArm && leftLeg && rightLeg;
+
+    if (allPressed && !comboHeldLastFrame)
     {
-        bool head =
-        Input.GetKey(KeyCode.W) ||
-        Input.GetKey(KeyCode.T) ||
-        Input.GetKey(KeyCode.I);
+        successfulPresses++;
+        currentRise += upwardStep;
 
-        bool leftArm =
-            Input.GetKey(KeyCode.A) ||
-            Input.GetKey(KeyCode.F) ||
-            Input.GetKey(KeyCode.J);
+        Debug.Log("SOUL SAVE HIT: " + successfulPresses + "/" + pressesNeeded);
 
-        bool rightArm =
-            Input.GetKey(KeyCode.D) ||
-            Input.GetKey(KeyCode.H) ||
-            Input.GetKey(KeyCode.L);
-
-        bool leftLeg =
-            Input.GetKey(KeyCode.Z) ||
-            Input.GetKey(KeyCode.V) ||
-            Input.GetKey(KeyCode.M);
-
-        bool rightLeg =
-            Input.GetKey(KeyCode.X) ||
-            Input.GetKey(KeyCode.B) ||
-            Input.GetKey(KeyCode.Comma);
-
-        bool allPressed = head && leftArm && rightArm && leftLeg && rightLeg;
-
-        if (allPressed && !comboHeldLastFrame)
+        if (successfulPresses >= pressesNeeded)
         {
-            successfulPresses++;
-            currentRise += upwardStep;
-
-            Debug.Log("SOUL SAVE HIT: " + successfulPresses + "/" + pressesNeeded);
-
-            if (successfulPresses >= pressesNeeded)
-            {
-                SaveSoul();
-            }
+            SaveSoul();
         }
-
-        comboHeldLastFrame = allPressed;
-
-        //bool pressedAny =
-        //    Input.GetKeyDown(KeyCode.W) ||
-        //    Input.GetKeyDown(KeyCode.A) ||
-        //    Input.GetKeyDown(KeyCode.D) ||
-        //    Input.GetKeyDown(KeyCode.Z) ||
-        //    Input.GetKeyDown(KeyCode.X);
-
-        //if (pressedAny)
-        //{
-        //    successfulPresses++;
-        //    currentRise += upwardStep;
-
-        //    Debug.Log("SOUL SAVE HIT: " + successfulPresses + "/" + pressesNeeded);
-
-        //    if (successfulPresses >= pressesNeeded)
-        //    {
-        //        SaveSoul();
-        //    }
-        //}
     }
+
+    comboHeldLastFrame = allPressed;
+}
 
     void UpdateRescueUI()
     {
