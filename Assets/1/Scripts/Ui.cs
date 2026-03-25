@@ -34,6 +34,12 @@ public class Ui : MonoBehaviour
         }
     }
 
+    public void GamePlayStart()
+    {
+        HelpUI.SetActive(false);
+        dollAttackManager.GameStart();
+    }
+
     public bool AnyActive()
     {
         foreach (GameObject endUI in endUIs)
