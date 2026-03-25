@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerAttackManager : MonoBehaviour
 {
-    public int dollAttackAmount = 5;
+    private int dollAttackAmount = 5;
     public bool isBeingAttacked = false;
     public bool isAttackedFalse = false;
 
@@ -30,10 +30,10 @@ public class PlayerAttackManager : MonoBehaviour
 
     public SoulLivesManager soulLivesManager;
 
-    private int playerAttackAmount;
-    private int playerAttackAmountSoft = 3;
-    private int playerAttackAmountMedium = 6;
-    private int playerAttackAmountStrong = 9;
+    private int playerAttackAmount = 15;
+    private int dollAttackAmountSoft = 45;
+    private int dollAttackAmountMedium = 9;
+    private int dollAttackAmountStrong = 12;
 
     private CPR cpr;
     private SoulExtract soulExtract;
@@ -52,6 +52,8 @@ public class PlayerAttackManager : MonoBehaviour
 
     void Update()
     {
+        if (soulExtract != null && soulExtract.rescueActive)
+            return;
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.I)) CheckAttackStrength("Head");
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.J)) CheckAttackStrength("LeftArm");
@@ -70,7 +72,7 @@ public class PlayerAttackManager : MonoBehaviour
             Data.isHitMedium = false;
             Data.isHitStrong = false;
             Data.isHitSoft = true;
-            playerAttackAmount = playerAttackAmountSoft;
+            dollAttackAmount = dollAttackAmountSoft;
 
         }
         if (Input.GetKeyDown(KeyCode.T) || Input.GetKeyDown(KeyCode.F) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.B))
@@ -79,7 +81,7 @@ public class PlayerAttackManager : MonoBehaviour
             Data.isHitStrong = false;
             Data.isHitMedium = true;
 
-            playerAttackAmount = playerAttackAmountMedium;
+            dollAttackAmount = dollAttackAmountMedium;
         }
         if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.J) || Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Comma))
         {
@@ -87,7 +89,7 @@ public class PlayerAttackManager : MonoBehaviour
             Data.isHitMedium = false;
             Data.isHitStrong = true;
 
-            playerAttackAmount = playerAttackAmountStrong;
+            dollAttackAmount = dollAttackAmountStrong;
             //CPR start
             cpr.StartCPR();
         }

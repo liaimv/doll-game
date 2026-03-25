@@ -17,7 +17,7 @@ public class SoulLivesManager : MonoBehaviour
 
     void Start()
     {
-        friendDeathUIObject.SetActive(false);
+        if (friendDeathUIObject != null) friendDeathUIObject.SetActive(false);
 
         soulLife1 = soulLivesObject.transform.GetChild(0).gameObject;
         soulLife2 = soulLivesObject.transform.GetChild(1).gameObject;

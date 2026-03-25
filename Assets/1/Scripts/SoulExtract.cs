@@ -36,6 +36,9 @@ public class SoulExtract : MonoBehaviour
     private Vector3 rescueBasePosition;
     private float currentRise = 0f;
 
+    public GameObject dollObject;
+    public GameObject successObject;
+
     void Start()
     {
         if (rescueText != null)
@@ -217,6 +220,8 @@ public class SoulExtract : MonoBehaviour
 
 
         rescueUI.SetActive(true);
+        dollObject.SetActive(false);
+        successObject.SetActive(true);
         Debug.Log("SOUL SAVED");
     }
 
