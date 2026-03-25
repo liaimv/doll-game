@@ -40,9 +40,9 @@ public class PlayerAttackManager : MonoBehaviour
     public SoulLivesManager soulLivesManager;
 
     private int playerAttackAmount = 15;
-    private int dollAttackAmountSoft = 6;
-    private int dollAttackAmountMedium = 9;
-    private int dollAttackAmountStrong = 12;
+    private int dollAttackAmountSoft = 10;
+    private int dollAttackAmountMedium = 15;
+    private int dollAttackAmountStrong = 20;
 
     private CPR cpr;
     private SoulExtract soulExtract;
