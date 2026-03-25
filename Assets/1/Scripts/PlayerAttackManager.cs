@@ -105,17 +105,17 @@ void CheckAttackStrength(string attackKey)
     if (pressure < 300)
     {
         Data.isHitSoft = true;
-        playerAttackAmount = dollAttackAmountSoft;
+        dollAttackAmount = dollAttackAmountSoft;
     }
     else if (pressure < 700)
     {
         Data.isHitMedium = true;
-        playerAttackAmount = dollAttackAmountMedium;
+        dollAttackAmount = dollAttackAmountMedium;
     }
     else
     {
         Data.isHitStrong = true;
-        playerAttackAmount = dollAttackAmountStrong;
+        dollAttackAmount = dollAttackAmountStrong;
 
         cpr.StartCPR();
     }
